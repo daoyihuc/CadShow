@@ -71,7 +71,7 @@ public class DragScaleRectView extends View implements View.OnTouchListener {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        super.onDraw(canvas);//
         paint.setColor(Color.RED);
         paint.setStrokeWidth(4.0f);
         paint.setStyle(Paint.Style.STROKE);
