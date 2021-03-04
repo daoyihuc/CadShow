@@ -9,7 +9,10 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
+import com.zhihuan.daoyi.cad.interfaces.TouchEventChildListener;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 
 /**
@@ -37,7 +40,7 @@ public class DragScaleRectView extends View implements View.OnTouchListener {
     private static final int LEFT_BOTTOM = 0x13;
     private static final int RIGHT_BOTTOM = 0x14;
     private static final int CENTER = 0x19;
-    private int offset = 20;
+    private int offset = 0;
 
     public boolean flage = true;
 
@@ -79,48 +82,33 @@ public class DragScaleRectView extends View implements View.OnTouchListener {
                 - offset, paint);
     }
 
-    TouchEventListener mListener;
+    TouchEventChildListener mListener;
 
-    public void setListener(TouchEventListener listener) {
+    public void setListener(TouchEventChildListener listener) {
         mListener = listener;
     }
 
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        boolean b = mListener.dispatchTouchEvent(event);
-////
-////        if (mListener != null) {
-////            if(b){
-////                return b;
-////            }else{
-////                return super.dispatchTouchEvent(event);
-////            }
-////        } else {
-////
-////        }
-//        return super.dispatchTouchEvent(event);
-//    }
 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
+        return false;
+//        int action = event.getAction();
+//        if (action == MotionEvent.ACTION_DOWN) {
+//            oriLeft = v.getLeft();
+//            oriRight = v.getRight();
+//            oriTop = v.getTop();
+//            oriBottom = v.getBottom();
+//            lastY = (int) event.getRawY();
+//            lastX = (int) event.getRawX();
+//            dragDirection = getDirection(v, (int) event.getX(),
+//                    (int) event.getY());
+//        }
+//        // 处理拖动事件
+//        delDrag(v, event, action);
+//        invalidate();
 
-        int action = event.getAction();
-        if (action == MotionEvent.ACTION_DOWN) {
-            oriLeft = v.getLeft();
-            oriRight = v.getRight();
-            oriTop = v.getTop();
-            oriBottom = v.getBottom();
-            lastY = (int) event.getRawY();
-            lastX = (int) event.getRawX();
-            dragDirection = getDirection(v, (int) event.getX(),
-                    (int) event.getY());
-        }
-        // 处理拖动事件
-        delDrag(v, event, action);
-        invalidate();
-        return true;
     }
 
     /**

@@ -10,12 +10,17 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.RequiresApi;
 
+import com.zhihuan.daoyi.cad.interfaces.TouchEventChildListener;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: daoyi(yanwen)
@@ -67,11 +72,22 @@ public class DragRelativeLayoutView extends RelativeLayout {
      * 两个手指的中间点
      */
     private PointF midPoint;
-
     private Context mContext;
     private Canvas mCanvas;
 
-    boolean falge = false;
+    boolean first =true;
+
+    // 组件类型
+    DragScaleCircleView scaleCircleView;
+    DragScaleRectView scaleRectView;
+    DragBaseView dragBaseView;
+
+    List<DragScaleCircleView> listCircle = new ArrayList<>();
+    List<DragScaleRectView> listRect = new ArrayList<>();
+
+
+    RelativeLayout.LayoutParams params;
+
 
 
     public DragRelativeLayoutView(Context context) {
@@ -94,13 +110,19 @@ public class DragRelativeLayoutView extends RelativeLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         rect.offset(MacUtils.dpto(getWidth() / 2), MacUtils.dpto(getHeight() / 2));
         rectSrc.offset(MacUtils.dpto(getWidth() / 2), MacUtils.dpto(getHeight() / 2));
-
 //        setMeasuredDimension((int)rect.width(),(int) rect.height());
 
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if(false){
+            Rect rects=new Rect();
+            getLocalVisibleRect(rects);
+            rect.set(rects);
+            first=false;
+            rectSrc.set(rect);
+        }
 
 
         this.mCanvas = canvas;
@@ -118,6 +140,8 @@ public class DragRelativeLayoutView extends RelativeLayout {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+
         return s(event);
     }
 
@@ -129,47 +153,43 @@ public class DragRelativeLayoutView extends RelativeLayout {
             case MotionEvent.ACTION_DOWN:
                 mode = MODE_DRAG;
                 // 记录ImageView当前的移动位置
-                currentMatrix.set(matrix);
+//                currentMatrix.set(matrix);
                 startPoint.set(event.getX(), event.getY());
+                if(mListener!=null&&mListener.DrawingOption()){
+                    Log.e("daoyi","绘制模式");
+                    DrawingAdd(event, mListener.DrawingType());
+                }else{
+                    // 记录ImageView当前的移动位置
+                    currentMatrix.set(matrix);
+                }
+
                 break;
             // 手指在屏幕上移动，改事件会被不断触发
             case MotionEvent.ACTION_MOVE:
-                // 拖拉图片
-                if (mode == MODE_DRAG) {
-                    float dx = event.getX() - startPoint.x; // 得到x轴的移动距离
-                    float dy = event.getY() - startPoint.y; // 得到x轴的移动距离
-                    // 在没有移动之前的位置上进行移动
-                    matrix.set(currentMatrix);
-                    matrix.postTranslate(dx / 2, dy / 2);
-                }
-                // 放大缩小图片
-                else if (mode == MODE_ZOOM) {
-                    float endDis = distance(event);// 结束距离
-                    if (endDis > 10f) { // 两个手指并拢在一起的时候像素大于10
-                        scale = endDis / startDis;// 得到缩放倍数
-                        scaleN += scale;
-                        matrix.set(currentMatrix);
-                        matrix.postScale(scale, scale, midPoint.x, midPoint.y);
-
+                if(mListener!=null&&mListener.DrawingOption()){
+                    Log.e("daoyi","绘制模式");
+                    Log.e("daoyi","绘制类型："+mListener.DrawingType());
+                    if(mListener.DrawingType()==0){
+                        DrawingMove(event,dragBaseView);
                     }
-                }
-                matrix.mapRect(rectEnd, rectSrc);
+                    if(mListener.DrawingType()==1){
+                        DrawingMove(event,dragBaseView);
+                    }
 
-                matrix.setPolyToPoly(new float[]{0, 0, rectSrc.width() / 2, rectSrc.height() / 2}, 0,
-                        new float[]{0, 0, rectEnd.width() / 2, rectEnd.height() / 2}, 0, 2);
-                setAnimationMatrix(matrix);
-                currentMatrix.set(matrix);
-//                rectSrc.set(rectEnd);
-                getLayoutParams().width = (int) rectEnd.width();
-                getLayoutParams().height = (int) rectEnd.height();
-                onMeasure((int) rectEnd.width(), (int) rectEnd.height());
-                invalidate();
+                }else{
+                    MatrixF(event);
+                    invalidate();
+                }
+
                 break;
             // 手指离开屏幕
             case MotionEvent.ACTION_UP:
                 // 当触点离开屏幕，但是屏幕上还有触点(手指)
             case MotionEvent.ACTION_POINTER_UP:
                 mode = 0;
+                if(mListener!=null&&mListener.DrawingOption()){
+                    mListener.DrawingCloseCall(false);
+                }
                 break;
             // 当屏幕上已经有触点(手指)，再有一个触点压下屏幕
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -190,7 +210,6 @@ public class DragRelativeLayoutView extends RelativeLayout {
         }else{
             return true;
         }
-//        return true;
     }
 
     /**
@@ -210,6 +229,101 @@ public class DragRelativeLayoutView extends RelativeLayout {
         float midX = (event.getX(1) + event.getX(0)) / 2;
         float midY = (event.getY(1) + event.getY(0)) / 2;
         return new PointF(midX, midY);
+    }
+
+
+    // 绘制事件
+    private void DrawingAdd(MotionEvent event, int type){
+        params=new RelativeLayout.LayoutParams(0,0);
+        params.setMargins((int)event.getX(),(int) event.getY(),0,0);
+        switch (type){
+            case 0:
+                dragBaseView = new DragBaseView(mContext,0);
+                dragBaseView.setLayoutParams(params);
+                addView(dragBaseView);
+                break;
+            case 1:
+                dragBaseView = new DragBaseView(mContext,1);
+                dragBaseView.setLayoutParams(params);
+                addView(dragBaseView);
+                break;
+        }
+
+    }
+
+    // 绘制移动
+    private void DrawingMove(MotionEvent event,View v){
+        float endx=event.getX();
+        float endy=event.getY();
+
+        if(v!=null){
+            int wx,hy; // 最重的宽高
+            if(endx>startPoint.x){
+                wx= (int) (endx-startPoint.x);
+            }else{
+                wx = (int) (startPoint.x-endx);
+            }
+            if(endy>startPoint.y){
+                hy= (int) (endy-startPoint.y);
+            }else{
+                hy = (int) (startPoint.y-endy);
+            }
+            params.width = wx;
+            params.height = hy;
+            v.setLayoutParams(params);
+
+        }else{
+            Log.e("daoyi","view为空");
+        }
+
+    }
+    // 为所有组件设置监听
+    private void DragbindClick(){
+        if(listRect.size()>0){
+            listRect.forEach(dragScaleRectView -> {
+//                dragScaleRectView.setOnClickListener(onClickListener);
+            });
+        }
+    }
+
+
+
+    // 矩阵事件
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void MatrixF(MotionEvent event){
+        // 拖拉图片
+        if (mode == MODE_DRAG) {
+            float dx = event.getX() - startPoint.x; // 得到x轴的移动距离
+            float dy = event.getY() - startPoint.y; // 得到x轴的移动距离
+            // 在没有移动之前的位置上进行移动
+//                    matrix.set(currentMatrix);
+            matrix.postTranslate(MacUtils.dpto((int) dx), MacUtils.dpto((int) dy));
+            matrix.mapRect(rectEnd, rectSrc);
+        }
+        // 放大缩小图片
+        else if (mode == MODE_ZOOM) {
+            float endDis = distance(event);// 结束距离
+            float a= 0;
+            if (endDis > 10f) { // 两个手指并拢在一起的时候像素大于10
+                scale = endDis / startDis;// 得到缩放倍数
+                Log.e("daoyi", "" + scale);
+                if(scaleN!=0){
+                    scaleN= 1-scale-Math.min(scale,scaleN)/Math.max(scale,scaleN);
+                }else{
+                    scaleN = Math.abs(scale-1);
+                }
+            }
+//            if(scaleN<=10f&&scaleN>0.4f){
+                matrix.set(currentMatrix);
+                matrix.postScale(scale, scale, midPoint.x, midPoint.y);
+//            }
+            Log.e("daoyi","scaleN:"+scaleN);
+            Log.e("daoyi","scaleN2:"+Math.min(scale,scaleN)/Math.max(scale,scaleN));
+        }
+        setAnimationMatrix(matrix);
+        currentMatrix.set(matrix);
+        startPoint.set(event.getX(), event.getY());
+        rectSrc.set(rectEnd);
     }
 
 }

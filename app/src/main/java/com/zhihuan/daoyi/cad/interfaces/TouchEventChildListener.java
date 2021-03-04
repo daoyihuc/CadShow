@@ -8,9 +8,6 @@ import android.view.MotionEvent;
  * @params: “details”
  * @date :
  */
-public interface TouchEventListener{
+public interface TouchEventChildListener {
     boolean dispatchTouchEvent(MotionEvent event);
-    boolean DrawingOption();
-    int DrawingType();
-    boolean DrawingCloseCall(boolean close);
 }
