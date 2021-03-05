@@ -10,7 +10,7 @@ import android.view.MotionEvent;
  */
 public interface TouchEventListener{
     boolean dispatchTouchEvent(MotionEvent event);
-    boolean DrawingOption();
+    boolean DrawingOption(); // 绘制事件
     int DrawingType();
     boolean DrawingCloseCall(boolean close);
 }

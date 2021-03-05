@@ -1,7 +1,6 @@
 package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -16,7 +15,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.RequiresApi;
 
-import com.zhihuan.daoyi.cad.interfaces.TouchEventChildListener;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * @params: “details”
  * @date : 3
  */
-public class DragRelativeLayoutView extends RelativeLayout implements View.OnTouchListener {
+public class DragRelativeLayoutView3 extends RelativeLayout {
 
     /**
      * 记录是拖拉照片模式还是放大缩小照片模式
@@ -75,12 +73,12 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     private PointF midPoint;
     private Context mContext;
     private Canvas mCanvas;
-    boolean first = true;
+    boolean first =true;
 
-    boolean touchChild = false; // 子类消费事件
-    boolean touchParent = false; // 父类消费事件
-    boolean touchDraw = false;// 绘制事件
-    boolean touch = true; // 父类消费事件
+    boolean touchChild=false; // 子类消费事件
+    boolean touchParent=false; // 父类消费事件
+    boolean touchDraw=false;// 绘制事件
+    boolean touch=true; // 父类消费事件
 
     int childFlage = 0;// 子节点标识
 
@@ -95,22 +93,23 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     List<DragBaseView> listBase = new ArrayList<>();
 
 
-    RelativeLayout.LayoutParams params;
+    LayoutParams params;
 
 
-    public DragRelativeLayoutView(Context context) {
+
+    public DragRelativeLayoutView3(Context context) {
         super(context);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs) {
+    public DragRelativeLayoutView3(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragRelativeLayoutView3(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         init();
@@ -125,23 +124,29 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
     }
 
-    private void init() {
-        setOnTouchListener(this);
+    private void init(){
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                touchChild = false;
+            }
+        });
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (false) {
-            Rect rects = new Rect();
+        if(false){
+            Rect rects=new Rect();
             getLocalVisibleRect(rects);
             rect.set(rects);
-            first = false;
+            first=false;
             rectSrc.set(rect);
         }
 
 
         this.mCanvas = canvas;
         super.onDraw(this.mCanvas);
+        Log.e("daoyi", String.valueOf(getMatrix()));
     }
 
     TouchEventListener mListener;
@@ -156,48 +161,44 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     public boolean onTouchEvent(MotionEvent event) {
 
 
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
         return s(event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     public boolean s(MotionEvent event) {
         // 优先级计算
         judgment(event);
-        if (touch) {
+        if(touch){
             /** 通过与运算保留最后八位 MotionEvent.ACTION_MASK = 255 */
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 // 手指压下屏幕
                 case MotionEvent.ACTION_DOWN:
                     mode = MODE_DRAG;
                     // 记录ImageView当前的移动位置
+//                currentMatrix.set(matrix);
                     startPoint.set(event.getX(), event.getY());
-                    if (mListener != null && mListener.DrawingOption()) {
-                        Log.e("daoyi", "绘制模式");
+                    if(mListener!=null&&mListener.DrawingOption()){
+                        Log.e("daoyi","绘制模式");
                         DrawingAdd(event, mListener.DrawingType());
-                    } else {
+                    }else{
                         // 记录ImageView当前的移动位置
                         currentMatrix.set(matrix);
                     }
+
                     break;
                 // 手指在屏幕上移动，改事件会被不断触发
                 case MotionEvent.ACTION_MOVE:
-                    if (mListener != null && mListener.DrawingOption()) {
-                        Log.e("daoyi", "绘制模式");
-                        Log.e("daoyi", "绘制类型：" + mListener.DrawingType());
-                        if (mListener.DrawingType() == 0) {
-                            DrawingMove(event, dragBaseView);
+                    if(mListener!=null&&mListener.DrawingOption()){
+                        Log.e("daoyi","绘制模式");
+                        Log.e("daoyi","绘制类型："+mListener.DrawingType());
+                        if(mListener.DrawingType()==0){
+                            DrawingMove(event,dragBaseView);
                         }
-                        if (mListener.DrawingType() == 1) {
-                            DrawingMove(event, dragBaseView);
+                        if(mListener.DrawingType()==1){
+                            DrawingMove(event,dragBaseView);
                         }
 
-                    } else {
+                    }else{
                         MatrixF(event);
                         invalidate();
                     }
@@ -208,7 +209,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                     // 当触点离开屏幕，但是屏幕上还有触点(手指)
                 case MotionEvent.ACTION_POINTER_UP:
                     mode = 0;
-                    if (mListener != null && mListener.DrawingOption()) {
+                    if(mListener!=null&&mListener.DrawingOption()){
                         mListener.DrawingCloseCall(false);
                     }
                     break;
@@ -234,15 +235,14 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     }
 
 
-    int ids = 110;
-
+    int ids=110;
     // 绘制事件
-    private void DrawingAdd(MotionEvent event, int type) {
-        params = new RelativeLayout.LayoutParams(0, 0);
-        params.setMargins((int) event.getX(), (int) event.getY(), 0, 0);
-        switch (type) {
+    private void DrawingAdd(MotionEvent event, int type){
+        params=new LayoutParams(0,0);
+        params.setMargins((int)event.getX(),(int) event.getY(),0,0);
+        switch (type){
             case 0:
-                dragBaseView = new DragBaseView(mContext, 0, ids);
+                dragBaseView = new DragBaseView(mContext,0,ids);
                 dragBaseView.setLayoutParams(params);
                 dragBaseView.setOption(childOption);
                 addView(dragBaseView);
@@ -250,7 +250,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 ids++;
                 break;
             case 1:
-                dragBaseView = new DragBaseView(mContext, 1, ids);
+                dragBaseView = new DragBaseView(mContext,1,ids);
                 dragBaseView.setLayoutParams(params);
                 dragBaseView.setOption(childOption);
                 addView(dragBaseView);
@@ -259,8 +259,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 break;
         }
     }
-
-    DragBaseView.Option childOption = new DragBaseView.Option() {
+    DragBaseView.Option childOption=new DragBaseView.Option() {
         @Override
         public int Type() {
             return 0;
@@ -268,14 +267,13 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
         @Override
         public void select(DragBaseView view) {
-            Log.e("daoyi", "" + view.flage);
-            Log.e("daoyi", "" + view.isSelect);
-//            Log.e("daoyi", "" + listBase.get(0).flage);
-            for (int i = 0; i < listBase.size(); i++) {
-                if (listBase.get(i).flage != view.flage) {
+            Log.e("daoyi",""+view.flage);
+            Log.e("daoyi",""+listBase.get(0).flage);
+            for(int i=0;i<listBase.size();i++){
+                if(listBase.get(i).flage != view.flage){
                     listBase.get(i).isSelect = false;
-                    listBase.get(i).show();
-                } else {
+                    listBase.get(i).setSelect(false);
+                }else{
                     touchChild = view.isSelect;
                     childFlage = view.flage;
                 }
@@ -285,35 +283,35 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     };
 
     // 绘制移动
-    private void DrawingMove(MotionEvent event, View v) {
-        float endx = event.getX();
-        float endy = event.getY();
+    private void DrawingMove(MotionEvent event,View v){
+        float endx=event.getX();
+        float endy=event.getY();
 
-        if (v != null) {
-            int wx, hy; // 最重的宽高
-            if (endx > startPoint.x) {
-                wx = (int) (endx - startPoint.x);
-            } else {
-                wx = (int) (startPoint.x - endx);
+        if(v!=null){
+            int wx,hy; // 最重的宽高
+            if(endx>startPoint.x){
+                wx= (int) (endx-startPoint.x);
+            }else{
+                wx = (int) (startPoint.x-endx);
             }
-            if (endy > startPoint.y) {
-                hy = (int) (endy - startPoint.y);
-            } else {
-                hy = (int) (startPoint.y - endy);
+            if(endy>startPoint.y){
+                hy= (int) (endy-startPoint.y);
+            }else{
+                hy = (int) (startPoint.y-endy);
             }
             params.width = wx;
             params.height = hy;
             v.setLayoutParams(params);
 
-        } else {
-            Log.e("daoyi", "view为空");
+        }else{
+            Log.e("daoyi","view为空");
         }
 
     }
 
     // 矩阵事件
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void MatrixF(MotionEvent event) {
+    private void MatrixF(MotionEvent event){
         // 拖拉图片
         if (mode == MODE_DRAG) {
             float dx = event.getX() - startPoint.x; // 得到x轴的移动距离
@@ -326,7 +324,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         // 放大缩小图片
         else if (mode == MODE_ZOOM) {
             float endDis = distance(event);// 结束距离
-            float a = 0;
+            float a= 0;
             if (endDis > 10f) { // 两个手指并拢在一起的时候像素大于10
 //                scale = endDis / startDis;// 得到缩放倍数
                 scale = endDis - startDis;// 得到缩放倍数
@@ -334,13 +332,12 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 scale = (float) (scaleN + scale / getWidth());
             }
 //            if(scaleN<=10f&&scaleN>0.4f){
-            matrix.set(currentMatrix);
-            matrix.postScale(scale, scale, midPoint.x, midPoint.y);
+                matrix.set(currentMatrix);
+                matrix.postScale(scale, scale, midPoint.x, midPoint.y);
 //            }
-            Log.e("daoyi", "scaleN:" + scaleN);
-            Log.e("daoyi", "scaleN2:" + Math.min(scale, scaleN) / Math.max(scale, scaleN));
+            Log.e("daoyi","scaleN:"+scaleN);
+            Log.e("daoyi","scaleN2:"+Math.min(scale,scaleN)/Math.max(scale,scaleN));
         }
-        setCameraDistance(10);
         setAnimationMatrix(matrix);
         currentMatrix.set(matrix);
         startPoint.set(event.getX(), event.getY());
@@ -348,41 +345,60 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     }
 
     // 事件优先级判断
-    public void judgment(MotionEvent event) {
-//        isShowChild(event);
-        Log.e("daoyi", "绘制事件：" + touchDraw);
-        Log.e("daoyi", "子事件：" + touchChild);
-        Log.e("daoyi", "默认：" + touch);
-        if (mListener != null) {
+    public void judgment(MotionEvent event){
+
+        Log.e("daoyi","绘制事件："+touchDraw);
+        Log.e("daoyi","子事件："+touchChild);
+        Log.e("daoyi","默认："+touch);
+        if(mListener!=null){
             touchDraw = mListener.DrawingOption();
         }
-        if (touchDraw) {
+        if(touchDraw){
             touch = touchDraw;
-            clearSelect();
-        } else if (touchChild) {
-            touch = !touchChild;
-        } else  {
-            touch = true;
+        }else if(touchChild){
+//            touch = !touchChild;
+            isShowChild(event);
         }
-        //&&!isShowChild(event)
+    }
+
+    int offset = 50;
+    // 判断当前触摸点是否在子view的可见区域
+    public void isShowChild(MotionEvent event){
+
+        for(int i=0;i<listBase.size();i++){
+            Rect rect = new Rect();
+            listBase.get(i).getLocalVisibleRect(rect);
+            if(listBase.get(i).flage==childFlage){
+                if (rect.contains((int) event.getX()+offset, (int) event.getY()+offset)
+                || rect.contains((int) event.getX()-offset, (int) event.getY()-offset)
+                ) {
+
+                    listBase.get(i).isSelect = true;
+                    listBase.get(i).setSelect(true);
+                    touch = false;
+                } else {
+
+                    listBase.get(i).isSelect = false;
+                    listBase.get(i).setSelect(false);
+                    touch = true;
+                }
+            }else{
+                if (rect.contains((int) event.getX()+offset, (int) event.getY()+offset)
+                        || rect.contains((int) event.getX()-offset, (int) event.getY()-offset)) {
+                    listBase.get(i).isSelect = true;
+                    listBase.get(i).setSelect(true);
+                    touch = false;
+                } else {
+                    touch = true;
+                    listBase.get(i).isSelect = false;
+                    listBase.get(i).setSelect(false);
+                }
+            }
+
+        }
     }
 
 
-
-
-    int offset = 100;
-
-    // 清除所有选中
-    public void clearSelect() {
-        for (int i = 0; i < listBase.size(); i++) {
-            listBase.get(i).isSelect = false;
-            listBase.get(i).show();
-            touchChild = false;
-            childFlage = 0;
-
-        }
-
-    }
 
 
     /**
@@ -403,6 +419,5 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         float midY = (event.getY(1) + event.getY(0)) / 2;
         return new PointF(midX, midY);
     }
-
 
 }

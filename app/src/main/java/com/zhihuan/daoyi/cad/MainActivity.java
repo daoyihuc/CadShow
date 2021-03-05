@@ -6,19 +6,23 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.zhihuan.daoyi.cad.databinding.ActivityMainBinding;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.views.DragImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
 
     ActivityMainBinding activityMainBinding;
     DragImageView mView;
 
-    boolean drawingMode =true;
+    boolean drawingMode =true; //  绘制事件
     int drawingType = -1; // 0： 矩形， 1： 圆形
+
+    boolean outSelect=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(activityMainBinding.getRoot());
 
+//        activityMainBinding.rootBox.setOnTouchListener(this);
 
         activityMainBinding.maxBox.setListener(touchEventListener);
         activityMainBinding.rectBtn.setOnClickListener( v -> {
@@ -54,17 +59,7 @@ public class MainActivity extends AppCompatActivity {
     TouchEventListener touchEventListener=new TouchEventListener() {
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
-//            Rect rect = new Rect();
-//            activityMainBinding.r1.getLocalVisibleRect(rect);
-//            Rect rect2 = new Rect();
-//            activityMainBinding.c1.getLocalVisibleRect(rect2);
-//            if (rect.contains((int) event.getX(), (int) event.getY())
-//                    ||rect.contains((int) event.getX(), (int) event.getY())) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-            return false;
+            return outSelect;
         }
 
         @Override
@@ -85,4 +80,22 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
+        return down(v,event);
+    }
+
+    public boolean down(View v,MotionEvent event){
+        if(v.getId()==R.id.rootBox){
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                outSelect = true;
+                Log.e("daoyi","最外层盒子被按下");
+                return true;
+            }
+            return false;
+        }else{
+            return false;
+        }
+    }
 }

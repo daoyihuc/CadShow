@@ -1,16 +1,10 @@
 package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
-import android.database.DatabaseUtils;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,11 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.RequiresApi;
-
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.databinding.BaseviewBinding;
-import com.zhihuan.daoyi.cad.utils.MacUtils;
 
 /**
  * @author: daoyi(yanwen)
@@ -30,14 +21,13 @@ import com.zhihuan.daoyi.cad.utils.MacUtils;
  * @params: “details”
  * @date :
  */
-public class DragBaseView extends RelativeLayout implements View.OnTouchListener {
+public class DragBaseView1 extends RelativeLayout implements View.OnTouchListener {
 
 
     private static final int LEFT_TOP = 0x11;
     private static final int RIGHT_TOP = 0x12;
     private static final int LEFT_BOTTOM = 0x13;
     private static final int RIGHT_BOTTOM = 0x14;
-    private static final int CENTER = 0;
     private int screenHeight;
     private int screenWidth;
     public int flage = 110;
@@ -49,7 +39,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     public interface Option{
         int Type();// 设置type
-        void select(DragBaseView view);
+        void select(DragBaseView1 view);
     }
     private Option option=null;
     public boolean isSelect =false;
@@ -73,7 +63,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         screenWidth = getResources().getDisplayMetrics().widthPixels;
     }
 
-    public DragBaseView(Context context,int type,int flag) {
+    public DragBaseView1(Context context, int type, int flag) {
         super(context);
         this.mContext= context;
         this.types=type;
@@ -82,13 +72,13 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     }
 
-    public DragBaseView(Context context, AttributeSet attrs) {
+    public DragBaseView1(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext= context;
         init();
     }
 
-    public DragBaseView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragBaseView1(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext= context;
         init();
@@ -115,55 +105,34 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         lb1.setOnTouchListener(this);
         rt1.setOnTouchListener(this);
         rb1.setOnTouchListener(this);
-        view.close.setOnTouchListener(this);
         if(types==0){
             scaleRectView =new DragScaleRectView(mContext);
-            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(-1,-1);
+            LayoutParams params=new LayoutParams(-1,-1);
             scaleRectView.setLayoutParams(params);
             scaleRectView.setClickable(true);
             scaleRectView.setId(R.id.centers);
             center.addView(scaleRectView);
+            scaleRectView.setOnClickListener(clickListener);
             scaleRectView.setOnTouchListener(this);
         }else  if(types==1){
             scaleCircleView =new DragScaleCircleView(mContext);
-            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(-1,-1);
+            LayoutParams params=new LayoutParams(-1,-1);
             scaleCircleView.setLayoutParams(params);
             scaleCircleView.setClickable(true);
             scaleCircleView.setId(R.id.centers);
             center.addView(scaleCircleView);
+            scaleCircleView.setOnClickListener(clickListener);
             scaleCircleView.setOnTouchListener(this);
         }
 
         initScreenW_H();
     }
 
-    // 关闭
-    public void close(boolean select){
-        isSelect = select;
-
-        if (!select&&option != null){
-            option.select(this);
-        }
-        show();
-    }
-
     // 设置选中状态
     public void setSelect(boolean select){
         isSelect = select;
 
-        if (option != null){
-            option.select(this);
-        }
-        show();
-
-    }
-    public void show(){
-
         if(isSelect){
-            lt1.setOnTouchListener(this);
-            lb1.setOnTouchListener(this);
-            rt1.setOnTouchListener(this);
-            rb1.setOnTouchListener(this);
             view.viewBox.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.shape_react));
             view.lt1.setVisibility(VISIBLE);
             view.lb1.setVisibility(VISIBLE);
@@ -181,24 +150,16 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             view.rt1.setVisibility(GONE);
             view.rb1.setVisibility(GONE);
         }
+        if (select && option != null){
+            option.select(this);
+        }
+
     }
-
-
-    View.OnClickListener clickListener= new View.OnClickListener() {
+    OnClickListener clickListener= new OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.centers:
-                    Log.e("daoyi","点击被相应");
-                    setSelect(!isSelect);
-                    break;
-
-                case R.id.close:
-                    setSelect(false);
-                    Log.e("daoyi","close");
-                    break;
-            }
-
+            Log.e("daoyi","点击被相应");
+            setSelect(!isSelect);
         }
     };
 
@@ -221,10 +182,11 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         top=getTop();
         right=getRight();
         bottom=getBottom();
-        dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
         // 处理拖动事件
         delDrag(v, event);
-        return true;
+//        invalidate();
+
+        return isSelect;
     }
 
 
@@ -253,10 +215,10 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         PointF endPoint=new PointF();
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                p.set(event.getX()+getLeft(),event.getY()+getTop());
+                p.set(event.getRawX(),event.getRawY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                endPoint.set(event.getX()+getLeft(),event.getY()+getTop());
+                endPoint.set(event.getRawX(),event.getRawY());
                 Log.e("daoyi","正在拖动");
 
                 int l_or_r= (int) (endPoint.x-StartP.x);
@@ -285,6 +247,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                         jumpWH(StartP,endPoint,3);
                         right(l_or_r);
                         bottom(t_or_b);
+
                         Log.e("daoyi","right_bottom在拖动");
                         break;
                     case R.id.centers:
@@ -294,33 +257,24 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                         top(t_or_b);
                         Log.e("daoyi","center在拖动");
                         break;
-
                 }
+
+
                 int w = (int) (right - left);
                 int h = (int) (bottom - top);
                 if(v.getId()!=R.id.centers){
-                    RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(w,h);
+                    LayoutParams params=new LayoutParams(w,h);
                     params.setMargins((int) left, (int) top,0, 0);
                     setLayoutParams(params);
                 }else{
-                    RelativeLayout.LayoutParams params= (LayoutParams) getLayoutParams();
+                    LayoutParams params= (LayoutParams) getLayoutParams();
                     params.setMargins((int) left, (int) top,0, 0);
                     setLayoutParams(params);
                 }
-                StartP.set(event.getX()+getLeft(),event.getY()+getTop());
-                break;
-            case MotionEvent.ACTION_UP:
-                float x2 = event.getX()+getLeft();
-                float y2 = event.getY()+getTop();
-                float distance = (float) Math.sqrt(Math.abs(p.x-x2)*Math.abs(p.x-x2)+Math.abs(p.y-y2)*Math.abs(p.y-y2));//两点之间的距离
-                switch (v.getId()){
-                    case R.id.centers:
-                        Log.i("i", "x1 - x2>>>>>>"+ distance);
-                        if (distance < 15) { // 距离较小，当作click事件来处理
-                            setSelect(!isSelect);
-                        }
-                        break;
-                }
+
+                StartP.set(event.getRawX(),event.getRawY());
+
+
                 break;
         }
 
@@ -402,39 +356,6 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     public int getFlage() {
         return flage;
-    }
-
-
-    /**
-     * 获取触摸点flag
-     *
-     * @param v
-     * @param x
-     * @param y
-     * @return
-     */
-    protected int getDirection(View v, int x, int y) {
-        Rect rectLt=new Rect();
-        Rect rectRt=new Rect();
-        Rect rectRb=new Rect();
-        Rect rectLb=new Rect();
-        lt1.getLocalVisibleRect(rectLt);
-        rt1.getLocalVisibleRect(rectRt);
-        rb1.getLocalVisibleRect(rectRb);
-        lb1.getLocalVisibleRect(rectLb);
-        if(rectLt.contains(x,y)){
-            return LEFT_TOP;
-        }
-        if(rectRt.contains(x,y)){
-            return RIGHT_TOP;
-        }
-        if(rectRb.contains(x,y)){
-            return RIGHT_BOTTOM;
-        }
-        if(rectLb.contains(x,y)){
-            return LEFT_BOTTOM;
-        }
-        return  0;
     }
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,13 +11,16 @@
     android:orientation="vertical"
     >
 
+
     <com.zhihuan.daoyi.cad.views.DragRelativeLayoutView
-        android:id="@+id/maxBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/cad"
-        >
+            android:id="@+id/maxBox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/test"
+            >
+    </com.zhihuan.daoyi.cad.views.DragRelativeLayoutView>
+
+
 <!--        <com.zhihuan.daoyi.cad.views.DragBaseView-->
 <!--            android:layout_width="100dp"-->
 <!--            android:layout_height="100dp"-->
@@ -38,13 +41,14 @@
 <!--            android:clickable="true"-->
 <!--            android:layout_below="@id/c1"-->
 <!--            />-->
-    </com.zhihuan.daoyi.cad.views.DragRelativeLayoutView>
+
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
         >
         <TextView
             android:id="@+id/rect_btn"
@@ -66,4 +70,4 @@
             android:layout_marginLeft="10dp"
             />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

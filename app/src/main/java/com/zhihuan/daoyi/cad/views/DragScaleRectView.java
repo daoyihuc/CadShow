@@ -40,7 +40,7 @@ public class DragScaleRectView extends View implements View.OnTouchListener {
     private static final int LEFT_BOTTOM = 0x13;
     private static final int RIGHT_BOTTOM = 0x14;
     private static final int CENTER = 0x19;
-    private int offset = 0;
+    private int offset = 20;
 
     public boolean flage = true;
 

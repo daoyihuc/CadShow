@@ -1,7 +1,6 @@
 package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -16,7 +15,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.RequiresApi;
 
-import com.zhihuan.daoyi.cad.interfaces.TouchEventChildListener;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * @params: “details”
  * @date : 3
  */
-public class DragRelativeLayoutView extends RelativeLayout implements View.OnTouchListener {
+public class DragRelativeLayoutView4 extends RelativeLayout implements View.OnTouchListener {
 
     /**
      * 记录是拖拉照片模式还是放大缩小照片模式
@@ -95,22 +93,22 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     List<DragBaseView> listBase = new ArrayList<>();
 
 
-    RelativeLayout.LayoutParams params;
+    LayoutParams params;
 
 
-    public DragRelativeLayoutView(Context context) {
+    public DragRelativeLayoutView4(Context context) {
         super(context);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs) {
+    public DragRelativeLayoutView4(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragRelativeLayoutView4(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         init();
@@ -161,7 +159,6 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
         return s(event);
     }
 
@@ -238,7 +235,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
     // 绘制事件
     private void DrawingAdd(MotionEvent event, int type) {
-        params = new RelativeLayout.LayoutParams(0, 0);
+        params = new LayoutParams(0, 0);
         params.setMargins((int) event.getX(), (int) event.getY(), 0, 0);
         switch (type) {
             case 0:
@@ -340,7 +337,6 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
             Log.e("daoyi", "scaleN:" + scaleN);
             Log.e("daoyi", "scaleN2:" + Math.min(scale, scaleN) / Math.max(scale, scaleN));
         }
-        setCameraDistance(10);
         setAnimationMatrix(matrix);
         currentMatrix.set(matrix);
         startPoint.set(event.getX(), event.getY());
@@ -366,7 +362,6 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         }
         //&&!isShowChild(event)
     }
-
 
 
 
