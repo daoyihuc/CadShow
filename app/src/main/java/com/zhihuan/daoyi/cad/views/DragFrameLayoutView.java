@@ -321,12 +321,23 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
             }
             RectF rectdst= new RectF();
             ViewGroup.LayoutParams layoutParams = getLayoutParams();
-            matrix.postScale(scaleB,scaleB,midPoint.x, midPoint.y);
-            matrix.mapRect(rectdst,rect);
-            layoutParams.width = (int) rectdst.width();
-            layoutParams.height = (int) rectdst.height();
+//            matrix.postScale(scaleB,scaleB,midPoint.x, midPoint.y);
+//            matrix.mapRect(rectdst,rect);
+//            layoutParams.width = (int) rectdst.width();
+//            layoutParams.height = (int) rectdst.height();
 //            rect.right = rectdst.width();
 //            rect.bottom = rectdst.height();
+
+
+            scaleW=(getWidth()-(int) (getWidth()*scaleA*0.1))/getWidth();
+            scaleH=(getHeight()-(int) (getHeight()*scaleA*0.1))/getHeight();
+
+//            RectF rectdst= new RectF();
+            layoutParams.width = getWidth()-(int) (getWidth()*scaleA*0.1);
+            layoutParams.height = getHeight()-(int) (getHeight()*scaleA*0.1);
+            mWidth = getWidth()-(int) (getWidth()*scaleA*0.1);
+            mHeight =  getHeight()-(int) (getHeight()*scaleA*0.1);
+
             setLayoutParams(layoutParams);
             allZoom();
 //            matrix.reset();
@@ -380,26 +391,27 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
 
     private void allZoom(){
         for(int i=0;i<listBase.size();i++){
-//            int w = listBase.get(i).getWidth()-(int) (listBase.get(i).getWidth()*scaleA*0.1);
-//            int h = listBase.get(i).getHeight()-(int) ((int) listBase.get(i).getHeight()*scaleA*0.1);
+            int w = listBase.get(i).getWidth()-(int) (listBase.get(i).getWidth()*scaleA*0.1);
+            int h = listBase.get(i).getHeight()-(int) ((int) listBase.get(i).getHeight()*scaleA*0.1);
             int left = listBase.get(i).getLeft();
             int right = listBase.get(i).getRight();
             int top = listBase.get(i).getTop();
             int bottom = listBase.get(i).getBottom();
-            Rect rect=new Rect();
-            rect.left = left;
-            rect.right = right;
-            rect.top = top;
-            rect.bottom = bottom;
-            RectF rectdst= new RectF();
-            matrix.mapRect(rectdst,new RectF(rect));
-            int w = (int) rectdst.width();
-            int h = (int) rectdst.height();
+//            Rect rect=new Rect();
+//            rect.left = left;
+//            rect.right = right;
+//            rect.top = top;
+//            rect.bottom = bottom;
+//            RectF rectdst= new RectF();
+//            matrix.mapRect(rectdst,new RectF(rect));
+//            int w = (int) rectdst.width();
+//            int h = (int) rectdst.height();
             RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(w,h);
-            params.setMargins((int) rectdst.left,(int) rectdst.top,0,0);
+//            params.setMargins((int) rectdst.left,(int) rectdst.top,0,0);
+            params.setMargins((int) left,(int) top,0,0);
             listBase.get(i).setLayoutParams(params);
-            Log.e("daoyi_5",""+rect);
-            Log.e("daoyi_6",""+rectdst);
+//            Log.e("daoyi_5",""+rect);
+//            Log.e("daoyi_6",""+rectdst);
         }
 
 
