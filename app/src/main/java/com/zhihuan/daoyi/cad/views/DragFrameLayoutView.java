@@ -305,8 +305,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
             float endDis = distance(event);// 结束距离
             float a = 0;
             if (endDis > 30f) {
-                scaleA= (startDis-endDis)/(startDis+endDis);
-//                scaleA= (endDis-startDis);
+//                scaleA= (startDis-endDis)/(startDis+endDis);
+                scaleA= (endDis-startDis);
                 scaleB= (float) ((startDis+scaleA)/getWidth());
 //                ViewGroup.LayoutParams layoutParams = getLayoutParams();
 //                scaleW=(getWidth()-(int) (getWidth()*scaleA*0.1))/getWidth();
@@ -329,12 +329,18 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
 //            rect.bottom = rectdst.height();
 
 
-            scaleW=(getWidth()-(int) (getWidth()*scaleA*0.1))/getWidth();
-            scaleH=(getHeight()-(int) (getHeight()*scaleA*0.1))/getHeight();
+            scaleW=(getWidth()+(int) (getWidth()*scaleA*0.1))/getWidth();
+            scaleH=(getHeight()+(int) (getHeight()*scaleA*0.1))/getHeight();
+            if(scaleW==0){
+                scaleW+=0.1;
+            }
+            if(scaleH==0){
+                scaleH+=0.1;
+            }
 
 //            RectF rectdst= new RectF();
-            layoutParams.width = getWidth()-(int) (getWidth()*scaleA*0.1);
-            layoutParams.height = getHeight()-(int) (getHeight()*scaleA*0.1);
+            layoutParams.width = getWidth()-(int) (getWidth()*scaleW);
+            layoutParams.height = getHeight()-(int) (getHeight()*scaleH);
             mWidth = getWidth()-(int) (getWidth()*scaleA*0.1);
             mHeight =  getHeight()-(int) (getHeight()*scaleA*0.1);
 
@@ -391,8 +397,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
 
     private void allZoom(){
         for(int i=0;i<listBase.size();i++){
-            int w = listBase.get(i).getWidth()-(int) (listBase.get(i).getWidth()*scaleA*0.1);
-            int h = listBase.get(i).getHeight()-(int) ((int) listBase.get(i).getHeight()*scaleA*0.1);
+            int w = listBase.get(i).getWidth()-(int) (listBase.get(i).getWidth()*scaleW);
+            int h = listBase.get(i).getHeight()-(int) ((int) listBase.get(i).getHeight()*scaleH);
             int left = listBase.get(i).getLeft();
             int right = listBase.get(i).getRight();
             int top = listBase.get(i).getTop();
