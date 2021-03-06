@@ -28,7 +28,7 @@ import java.util.List;
  * @params: “details”
  * @date : 3
  */
-public class DragRelativeLayoutView extends RelativeLayout implements View.OnTouchListener {
+public class DragRelativeLayoutView6 extends RelativeLayout implements View.OnTouchListener {
 
     /**
      * 记录是拖拉照片模式还是放大缩小照片模式
@@ -82,8 +82,13 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     boolean touch = true; // 父类消费事件
 
     int childFlage = 0;// 子节点标识
-
     private int sreenH;
+
+    private int mWidth = 2000;
+    private int mHeight = 2000;
+    private int mWidthEnd = 2000;
+    private int mHeightEnd = 2000;
+
 
 
     // 组件类型
@@ -96,6 +101,8 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     List<DragBaseView> listBase = new ArrayList<>();
     List<DragBaseView> listBaseEnd = new ArrayList<>();
     List<LayoutParams> listParams = new ArrayList<>();
+
+
     LayoutParams params;
 
     private int screenHeight;
@@ -103,19 +110,19 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
 
 
-    public DragRelativeLayoutView(Context context) {
+    public DragRelativeLayoutView6(Context context) {
         super(context);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs) {
+    public DragRelativeLayoutView6(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
         init();
     }
 
-    public DragRelativeLayoutView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragRelativeLayoutView6(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         init();
@@ -126,7 +133,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         rect.offset(MacUtils.dpto(getWidth() / 2), MacUtils.dpto(getHeight() / 2));
         rectSrc.offset(MacUtils.dpto(getWidth() / 2), MacUtils.dpto(getHeight() / 2));
-        setMeasuredDimension(2500,2500);
+        setMeasuredDimension(mWidth,mHeight);
 
 
     }
@@ -147,9 +154,9 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (false) {
+        if (first) {
             Rect rects = new Rect();
-            getLocalVisibleRect(rects);
+            getGlobalVisibleRect(rects);
             rect.set(rects);
             first = false;
             rectSrc.set(rect);
@@ -158,10 +165,11 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
         this.mCanvas = canvas;
         super.onDraw(this.mCanvas);
+        Log.e("daoyi","rect"+rect);
+        Log.e("daoyi","rectsrc:"+rectSrc);
         Log.e("daoyi",""+matrix.toShortString());
         Log.e("daoyi","X:"+ MatrixUtils.getMatrixScaleX(getLeft(),matrix));
         Log.e("daoyi","Y:"+MatrixUtils.getMatrixScaleY(getTop(),matrix));
-
 
     }
 
@@ -197,11 +205,11 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 case MotionEvent.ACTION_DOWN:
                     mode = MODE_DRAG;
                     // 记录ImageView当前的移动位置
-                    startPoint.set(event.getRawX(), event.getRawY());
+                    startPoint.set(getXm(event), getYm(event));
                     if (mListener != null && mListener.DrawingOption()) {
                         Log.e("daoyi", "绘制模式");
-                        Log.e("daoyi", "downx:"+event.getX());
-                        Log.e("daoyi", "downy:"+event.getY());
+                        Log.e("daoyi", "downx:"+getXm(event));
+                        Log.e("daoyi", "downy:"+getYm(event));
                         DrawingAdd(event, mListener.DrawingType());
                     } else {
                         // 记录ImageView当前的移动位置
@@ -265,13 +273,14 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     // 绘制事件
     private void DrawingAdd(MotionEvent event, int type) {
         params = new LayoutParams(0, 0);
-        params.setMargins((int) event.getX(), (int) event.getY(), 0, 0);
+        params.setMargins((int) getXm(event), (int) getYm(event), 0, 0);
         listParams.add(params);
         switch (type) {
             case 0:
                 dragBaseView = new DragBaseView(mContext, 0, ids);
                 dragBaseView.setLayoutParams(params);
                 dragBaseView.setOption(childOption);
+//                addView(dragBaseView);
                 if(mListener!=null){
                     mListener.addViews(dragBaseView);
                 }
@@ -283,6 +292,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 dragBaseView = new DragBaseView(mContext, 1, ids);
                 dragBaseView.setLayoutParams(params);
                 dragBaseView.setOption(childOption);
+//                addView(dragBaseView);
                 if(mListener!=null){
                     mListener.addViews(dragBaseView);
                 }
@@ -291,6 +301,7 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
                 ids++;
                 break;
         }
+
     }
 
     DragBaseView.Option childOption = new DragBaseView.Option() {
@@ -319,8 +330,8 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
 
     // 绘制移动
     private void DrawingMove(MotionEvent event, View v) {
-        float endx = event.getX();
-        float endy = event.getY();
+        float endx = getXm(event);
+        float endy = getYm(event);
 
         if (v != null) {
             int wx, hy; // 最重的宽高
@@ -349,10 +360,12 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
     private void MatrixF(MotionEvent event) {
         // 拖拉图片
         if (mode == MODE_DRAG) {
-            float dx = event.getRawX() - startPoint.x; // 得到x轴的移动距离
-            float dy = event.getRawY() - startPoint.y; // 得到x轴的移动距离
+            float dx = getXm(event) - startPoint.x; // 得到x轴的移动距离
+            float dy = getYm(event)- startPoint.y; // 得到x轴的移动距离
             // 在没有移动之前的位置上进行移动
-            this.scrollBy((int) dx,(int) dy);
+//                    matrix.set(currentMatrix);
+            matrix.postTranslate(MacUtils.dpto((int) dx), MacUtils.dpto((int) dy));
+            matrix.mapRect(rectEnd, rectSrc);
         }
         // 放大缩小图片
         else if (mode == MODE_ZOOM) {
@@ -371,10 +384,14 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
             Log.e("daoyi", "scaleN:" + scaleN);
             Log.e("daoyi", "scaleN2:" + Math.min(scale, scaleN) / Math.max(scale, scaleN));
         }
-        setCameraDistance(10);
         setAnimationMatrix(matrix);
         currentMatrix.set(matrix);
-        startPoint.set(event.getX(), event.getY());
+
+        mWidthEnd= (int) MatrixUtils.getMatrixScaleX(mWidth,matrix);
+        mHeightEnd= (int) MatrixUtils.getMatrixScaleX(mHeight,matrix);
+        LayoutParams params=new LayoutParams(mWidthEnd,mHeightEnd);
+        setLayoutParams(params);
+        startPoint.set(getXm(event), getYm(event));
         rectSrc.set(rectEnd);
     }
 
@@ -398,9 +415,6 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         //&&!isShowChild(event)
     }
 
-
-
-
     int offset = 100;
 
     // 清除所有选中
@@ -414,8 +428,6 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         }
 
     }
-
-
     /**
      * 计算两个手指间的距离
      */
@@ -433,6 +445,17 @@ public class DragRelativeLayoutView extends RelativeLayout implements View.OnTou
         float midX = (event.getX(1) + event.getX(0)) / 2;
         float midY = (event.getY(1) + event.getY(0)) / 2;
         return new PointF(midX, midY);
+    }
+
+    // getx
+    private float getXm(MotionEvent event){
+        int a = mWidthEnd/screenWidth;
+        return Math.abs(MatrixUtils.getMatrixScaleX(Math.abs(event.getRawX()*a),matrix));
+    }
+    // gety
+    private float getYm(MotionEvent event){
+        int a = mHeightEnd/screenHeight;
+        return Math.abs(MatrixUtils.getMatrixScaleY(Math.abs(event.getRawY()*a),matrix));
     }
 
 

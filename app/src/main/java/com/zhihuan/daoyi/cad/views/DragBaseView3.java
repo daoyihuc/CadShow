@@ -1,16 +1,11 @@
 package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
-import android.database.DatabaseUtils;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,11 +13,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.RequiresApi;
-
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.databinding.BaseviewBinding;
-import com.zhihuan.daoyi.cad.utils.MacUtils;
 
 /**
  * @author: daoyi(yanwen)
@@ -30,7 +22,7 @@ import com.zhihuan.daoyi.cad.utils.MacUtils;
  * @params: “details”
  * @date :
  */
-public class DragBaseView extends RelativeLayout implements View.OnTouchListener {
+public class DragBaseView3 extends RelativeLayout implements View.OnTouchListener {
 
 
     private static final int LEFT_TOP = 0x11;
@@ -49,7 +41,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     public interface Option{
         int Type();// 设置type
-        void select(DragBaseView view);
+        void select(DragBaseView3 view);
     }
     private Option option=null;
     public boolean isSelect =false;
@@ -73,7 +65,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         screenWidth = getResources().getDisplayMetrics().widthPixels;
     }
 
-    public DragBaseView(Context context,int type,int flag) {
+    public DragBaseView3(Context context, int type, int flag) {
         super(context);
         this.mContext= context;
         this.types=type;
@@ -82,13 +74,13 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     }
 
-    public DragBaseView(Context context, AttributeSet attrs) {
+    public DragBaseView3(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext= context;
         init();
     }
 
-    public DragBaseView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragBaseView3(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext= context;
         init();
@@ -118,7 +110,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         view.close.setOnTouchListener(this);
         if(types==0){
             scaleRectView =new DragScaleRectView(mContext);
-            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(-1,-1);
+            LayoutParams params=new LayoutParams(-1,-1);
             scaleRectView.setLayoutParams(params);
             scaleRectView.setClickable(true);
             scaleRectView.setId(R.id.centers);
@@ -126,7 +118,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             scaleRectView.setOnTouchListener(this);
         }else  if(types==1){
             scaleCircleView =new DragScaleCircleView(mContext);
-            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(-1,-1);
+            LayoutParams params=new LayoutParams(-1,-1);
             scaleCircleView.setLayoutParams(params);
             scaleCircleView.setClickable(true);
             scaleCircleView.setId(R.id.centers);
@@ -184,7 +176,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     }
 
 
-    View.OnClickListener clickListener= new View.OnClickListener() {
+    OnClickListener clickListener= new OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
@@ -299,11 +291,11 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                 int w = (int) (right - left);
                 int h = (int) (bottom - top);
                 if(v.getId()!=R.id.centers){
-                    RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(w,h);
-                    params.setMargins((int) left, (int) top, 0, 0);
+                    LayoutParams params=new LayoutParams(w,h);
+                    params.setMargins((int) left, (int) top,0, 0);
                     setLayoutParams(params);
                 }else{
-                    RelativeLayout.LayoutParams params= (LayoutParams) getLayoutParams();
+                    LayoutParams params= (LayoutParams) getLayoutParams();
                     params.setMargins((int) left, (int) top,0, 0);
                     setLayoutParams(params);
                 }
@@ -357,9 +349,9 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
      */
     private void bottom( int dy) {
         bottom += dy;
-//        if (bottom > screenHeight + offset) {
-//            bottom = screenHeight + offset;
-//        }
+        if (bottom > screenHeight + offset) {
+            bottom = screenHeight + offset;
+        }
         if (bottom - top - 2 * offset < 200) {
             bottom = 200 + top + 2 * offset;
         }
@@ -373,9 +365,9 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
      */
     private void right(int dx) {
         right += dx;
-//        if (right > screenWidth + offset) {
-//            right = screenWidth + offset;
-//        }
+        if (right > screenWidth + offset) {
+            right = screenWidth + offset;
+        }
         if (right - left - 2 * offset < 200) {
             right = left + 2 * offset + 200;
         }

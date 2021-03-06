@@ -2,6 +2,7 @@ package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -28,7 +29,6 @@ public class SuperCanvas extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
 
     }
 }

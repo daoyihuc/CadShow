@@ -12,41 +12,70 @@
     >
 
 
-    <com.zhihuan.daoyi.cad.views.DragRelativeLayoutView
-            android:id="@+id/maxBox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/test"
+
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/maxBox2"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:scaleX="2"-->
+<!--        android:scaleY="2"-->
+<!--        >-->
+
+<!--    </RelativeLayout>-->
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+<!--        <RelativeLayout android:id="@+id/maxBox"-->
+<!--            android:layout_width="2000dp"-->
+<!--            android:layout_height="2000dp"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <ImageView android:src="@drawable/test"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"/>-->
+
+<!--            <com.zhihuan.daoyi.cad.views.DragBaseView-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_height="200dp"-->
+<!--                />-->
+<!--        </RelativeLayout>-->
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             >
-    </com.zhihuan.daoyi.cad.views.DragRelativeLayoutView>
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerInParent="true"
+                >
+                <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
+                    android:id="@+id/maxBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    >
+                    <ImageView android:src="@drawable/test"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
 
+                    <!--            <com.zhihuan.daoyi.cad.views.DragBaseView-->
+                    <!--                android:layout_width="200dp"-->
+                    <!--                android:layout_height="200dp"-->
+                    <!--                />-->
+                </com.zhihuan.daoyi.cad.views.DragFrameLayoutView>
 
-<!--        <com.zhihuan.daoyi.cad.views.DragBaseView-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:clickable="true"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            />-->
-<!--        <com.zhihuan.daoyi.cad.views.DragScaleCircleView-->
-<!--            android:id="@+id/c1"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:clickable="true"-->
-<!--            />-->
-<!--        <com.zhihuan.daoyi.cad.views.DragScaleRectView-->
-<!--            android:id="@+id/r1"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:clickable="true"-->
-<!--            android:layout_below="@id/c1"-->
-<!--            />-->
+            </FrameLayout>
 
+        </RelativeLayout>
+
+    </FrameLayout>
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         >
