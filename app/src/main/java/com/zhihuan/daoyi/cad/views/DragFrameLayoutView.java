@@ -384,7 +384,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         for(int i=0;i<listBase.size();i++){
             int w = listParams.get(i).width+listParams.get(i).width * (mWidthEnd/mWidth);
             int h = listParams.get(i).height+listParams.get(i).height* (mHeightEnd/mHeight);
-            int left =  listParams.get(i).leftMargin* (mHeightEnd/mHeight)+getScrollX()*(mWidthEnd/mWidth);
+            int left =  listParams.get(i).leftMargin* (mWidthEnd/mWidth)+getScrollX()*(mWidthEnd/mWidth);
             int right = (int) (listParams.get(i).rightMargin+MatrixUtils.getMatrixScaleX(listParams.get(i).rightMargin,matrix));
             int top = listParams.get(i).topMargin* (mHeightEnd/mHeight)+getScrollY()*(mHeightEnd/mHeight);
             int bottom =(int) (listParams.get(i).bottomMargin+MatrixUtils.getMatrixScaleX(listParams.get(i).bottomMargin,matrix));
