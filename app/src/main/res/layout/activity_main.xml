@@ -51,8 +51,8 @@
                 >
                 <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
                     android:id="@+id/maxBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="2000dp"
+                    android:layout_height="2000dp"
                     android:layout_gravity="center"
                     >
                     <ImageView android:src="@drawable/test"
