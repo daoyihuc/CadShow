@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity  {
     private int currentY;
 
     boolean drawingMode =true; //  绘制事件
-    int drawingType = -1; // 0： 矩形， 1： 圆形
+    int drawingType = -1; // 0： 矩形， 1： 圆形 2: 画笔
 
     boolean outSelect=false;
 
@@ -60,6 +60,17 @@ public class MainActivity extends AppCompatActivity  {
             }else if(drawingType == 1&& drawingMode){
                 drawingMode =false;
             }else if(drawingType == 1&& !drawingMode){
+                drawingMode = true;
+            }
+        });
+        activityMainBinding.canvasBtn.setOnClickListener( v -> {
+            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
+            if(drawingType !=2 && !drawingMode){
+                drawingType = 2;
+                drawingMode=!drawingMode;
+            }else if(drawingType == 2&& drawingMode){
+                drawingMode =false;
+            }else if(drawingType == 2&& !drawingMode){
                 drawingMode = true;
             }
         });

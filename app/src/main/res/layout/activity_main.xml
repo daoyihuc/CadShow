@@ -51,8 +51,8 @@
                 >
                 <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
                     android:id="@+id/maxBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="2000dp"
+                    android:layout_height="2000dp"
                     android:layout_gravity="center"
                     >
                     <ImageView android:src="@drawable/test"
@@ -94,6 +94,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="圆形"
+            android:textColor="@color/black"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            />
+        <TextView
+            android:id="@+id/canvas_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="画笔"
             android:textColor="@color/black"
             android:background="@color/white"
             android:padding="10dp"

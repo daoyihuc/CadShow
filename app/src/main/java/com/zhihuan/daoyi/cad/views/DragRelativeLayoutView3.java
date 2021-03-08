@@ -280,6 +280,11 @@ public class DragRelativeLayoutView3 extends RelativeLayout {
             }
 
         }
+
+        @Override
+        public void delView(DragBaseView view) {
+
+        }
     };
 
     // 绘制移动

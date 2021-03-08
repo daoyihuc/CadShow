@@ -28,9 +28,9 @@ public class MatrixUtils {
         float mscale_x = matrixValues[0];
         float mtrans_x = matrixValues[2];
         if(mtrans_x>0){
-            return x * (Math.abs(mscale_x) - 1 );
+            return x * (mscale_x - 1 );
         }else{
-            return x * (Math.abs(mscale_x) + 1) ;
+            return x * (mscale_x + 1) ;
         }
 
     }
@@ -45,9 +45,9 @@ public class MatrixUtils {
         float mscale_y = matrixValues[4];
         float mtrans_y = matrixValues[5];
         if(mtrans_y>0){
-            return y * (Math.abs(mscale_y) - 1);
+            return y * (mscale_y - 1);
         }else{
-            return y * (Math.abs(mscale_y) + 1 );
+            return y * (mscale_y + 1 );
         }
 
     }
