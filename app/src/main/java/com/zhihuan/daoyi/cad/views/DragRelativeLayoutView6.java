@@ -326,6 +326,11 @@ public class DragRelativeLayoutView6 extends RelativeLayout implements View.OnTo
             }
 
         }
+
+        @Override
+        public void delView(DragBaseView view) {
+            
+        }
     };
 
     // 绘制移动

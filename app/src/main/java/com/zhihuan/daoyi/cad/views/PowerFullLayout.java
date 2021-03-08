@@ -496,7 +496,7 @@ public class PowerFullLayout extends FrameLayout {
     }
 
 
-    DragBaseView.Option childOption = new DragBaseView.Option() {
+    DragBaseView.Option childOption = new DragBaseView.Option(){
         @Override
         public int Type() {
             return 0;
@@ -516,6 +516,11 @@ public class PowerFullLayout extends FrameLayout {
                     childFlage = view.flage;
                 }
             }
+
+        }
+
+        @Override
+        public void delView(DragBaseView view) {
 
         }
     };

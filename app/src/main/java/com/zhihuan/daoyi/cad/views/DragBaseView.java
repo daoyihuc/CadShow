@@ -1,6 +1,7 @@
 package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.zhihuan.daoyi.cad.R;
@@ -42,6 +44,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     public interface Option{
         int Type();// 设置type
         void select(DragBaseView view);
+        void delView(DragBaseView view);
     }
     private Option option=null;
     public boolean isSelect =false;
@@ -87,10 +90,11 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     }
 
     View lt1,lb1,rt1,rb1;
-    RelativeLayout box;
-    RelativeLayout center;
-    DragScaleRectView scaleRectView;
-    DragScaleCircleView scaleCircleView;
+    RelativeLayout box; // 边框盒子
+    RelativeLayout center; // 存储盒子
+    DragScaleRectView scaleRectView; // 矩形 0
+    DragScaleCircleView scaleCircleView; // 圆形 1
+    ImageView canvas; // 画板盒子 2
     int types=0; // 0：矩形 1:圆形
 
 
@@ -103,10 +107,18 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         rb1=view.rb1;
         box=view.box;
         center=view.viewBox;
+        view.close.setOnTouchListener(this);
         lt1.setOnTouchListener(this);
         lb1.setOnTouchListener(this);
         rt1.setOnTouchListener(this);
         rb1.setOnTouchListener(this);
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isSelect=true;
+            }
+        });
+
         view.close.setOnTouchListener(this);
         if(types==0){
             scaleRectView =new DragScaleRectView(mContext);
@@ -124,20 +136,19 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             scaleCircleView.setId(R.id.centers);
             center.addView(scaleCircleView);
             scaleCircleView.setOnTouchListener(this);
+        }else if(types==2){
+            canvas =new ImageView(mContext);
+            LayoutParams params=new LayoutParams(-1,-1);
+            canvas.setLayoutParams(params);
+            canvas.setClickable(true);
+            canvas.setId(R.id.centers);
+            center.addView(canvas);
+            canvas.setOnTouchListener(this);
         }
 
         initScreenW_H();
     }
 
-    // 关闭
-    public void close(boolean select){
-        isSelect = select;
-
-        if (!select&&option != null){
-            option.select(this);
-        }
-        show();
-    }
 
     // 设置选中状态
     public void setSelect(boolean select){
@@ -161,6 +172,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             view.lb1.setVisibility(VISIBLE);
             view.rt1.setVisibility(VISIBLE);
             view.rb1.setVisibility(VISIBLE);
+            view.close.setVisibility(VISIBLE);
             if(types==0){
                 scaleRectView.setOnTouchListener(this);
             }else  if(types==1){
@@ -172,6 +184,8 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             view.lb1.setVisibility(GONE);
             view.rt1.setVisibility(GONE);
             view.rb1.setVisibility(GONE);
+            view.close.setVisibility(INVISIBLE);
+//            view.close.setAlpha(0);
         }
     }
 
@@ -194,12 +208,19 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         }
     };
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         return super.onTouchEvent(event);
     }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        if(!isSelect){
+//            return true;
+//        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
     float left=0;
     float top=0;
     float right=0;
@@ -209,13 +230,16 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        left=getLeft();
-        top=getTop();
-        right=getRight();
-        bottom=getBottom();
-        dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
-        // 处理拖动事件
-        delDrag(v, event);
+//        if(isSelect){
+            left=getLeft();
+            top=getTop();
+            right=getRight();
+            bottom=getBottom();
+            dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
+            // 处理拖动事件
+            delDrag(v, event);
+//        }
+
         return true;
     }
 
@@ -227,10 +251,6 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
      * @param event
      * @param action
      */
-    PointF LtPoint=new PointF();
-    PointF LbPoint=new PointF();
-    PointF RtPoint=new PointF();
-    PointF RbPoint=new PointF();
     PointF StartP=new PointF();
 
     protected void delDrag(View v, MotionEvent event) {
@@ -250,56 +270,58 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             case MotionEvent.ACTION_MOVE:
                 endPoint.set(event.getX()+getLeft(),event.getY()+getTop());
                 Log.e("daoyi","正在拖动");
+                if(isSelect){
+                    int l_or_r= (int) (endPoint.x-StartP.x);
+                    int t_or_b= (int) (endPoint.y-StartP.y);
+                    switch (v.getId()){
+                        case R.id.lt1:
+                            jumpWH(StartP,endPoint,1);
+                            left(l_or_r);
+                            Log.e("daoyi","left_top在拖动");
+                            top(t_or_b);
+                            break;
+                        case R.id.lb1:
+                            jumpWH(StartP,endPoint,4);
+                            left(l_or_r);
+                            bottom(t_or_b);
+                            Log.e("daoyi","left_bottom在拖动");
+                            break;
+                        case R.id.rt1:
+                            jumpWH(StartP,endPoint,2);
+                            right(l_or_r);
+                            top(t_or_b);
 
-                int l_or_r= (int) (endPoint.x-StartP.x);
-                int t_or_b= (int) (endPoint.y-StartP.y);
-                switch (v.getId()){
-                    case R.id.lt1:
-                        jumpWH(StartP,endPoint,1);
-                        left(l_or_r);
-                        Log.e("daoyi","left_top在拖动");
-                        top(t_or_b);
-                        break;
-                    case R.id.lb1:
-                        jumpWH(StartP,endPoint,4);
-                        left(l_or_r);
-                       bottom(t_or_b);
-                        Log.e("daoyi","left_bottom在拖动");
-                        break;
-                    case R.id.rt1:
-                        jumpWH(StartP,endPoint,2);
-                        right(l_or_r);
-                        top(t_or_b);
+                            Log.e("daoyi","right_top在拖动");
+                            break;
+                        case R.id.rb1:
+                            jumpWH(StartP,endPoint,3);
+                            right(l_or_r);
+                            bottom(t_or_b);
+                            Log.e("daoyi","right_bottom在拖动");
+                            break;
+                        case R.id.centers:
+                            left(l_or_r);
+                            bottom(t_or_b);
+                            right(l_or_r);
+                            top(t_or_b);
+                            Log.e("daoyi","center在拖动");
+                            break;
 
-                        Log.e("daoyi","right_top在拖动");
-                        break;
-                    case R.id.rb1:
-                        jumpWH(StartP,endPoint,3);
-                        right(l_or_r);
-                        bottom(t_or_b);
-                        Log.e("daoyi","right_bottom在拖动");
-                        break;
-                    case R.id.centers:
-                        left(l_or_r);
-                        bottom(t_or_b);
-                        right(l_or_r);
-                        top(t_or_b);
-                        Log.e("daoyi","center在拖动");
-                        break;
-
+                    }
+                    int w = (int) (right - left);
+                    int h = (int) (bottom - top);
+                    if(v.getId()!=R.id.centers){
+                        LayoutParams params=new LayoutParams(w,h);
+                        params.setMargins((int) left, (int) top, 0, 0);
+                        setLayoutParams(params);
+                    }else{
+                        LayoutParams params= (LayoutParams) getLayoutParams();
+                        params.setMargins((int) left, (int) top,0, 0);
+                        setLayoutParams(params);
+                    }
+                    StartP.set(event.getX()+getLeft(),event.getY()+getTop());
                 }
-                int w = (int) (right - left);
-                int h = (int) (bottom - top);
-                if(v.getId()!=R.id.centers){
-                    LayoutParams params=new LayoutParams(w,h);
-                    params.setMargins((int) left, (int) top, 0, 0);
-                    setLayoutParams(params);
-                }else{
-                    LayoutParams params= (LayoutParams) getLayoutParams();
-                    params.setMargins((int) left, (int) top,0, 0);
-                    setLayoutParams(params);
-                }
-                StartP.set(event.getX()+getLeft(),event.getY()+getTop());
+
                 break;
             case MotionEvent.ACTION_UP:
                 float x2 = event.getX()+getLeft();
@@ -310,6 +332,14 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                         Log.i("i", "x1 - x2>>>>>>"+ distance);
                         if (distance < 15) { // 距离较小，当作click事件来处理
                             setSelect(!isSelect);
+                        }
+                        break;
+                    case R.id.close:
+
+                        if(distance<15){
+                            if(option!=null){
+                                option.delView(this);
+                            }
                         }
                         break;
                 }
@@ -323,6 +353,22 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 //        this.layout(left, top, right, bottom);
        ;
     }
+
+    // 为画板设置bitmap
+    public void setBitmap(Bitmap bitmap){
+        if(bitmap!=null){
+            canvas.setImageBitmap(bitmap);
+        }else{
+            post(() -> {
+                canvas.setImageBitmap(bitmap);
+            });
+        }
+    }
+
+
+
+
+
 
 
     /**
