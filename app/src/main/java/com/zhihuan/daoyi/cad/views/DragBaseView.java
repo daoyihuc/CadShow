@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -43,6 +44,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     public interface Option{
         int Type();// 设置type
+        boolean isDraw();
         void select(DragBaseView view);
         void delView(DragBaseView view);
     }
@@ -50,7 +52,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     public boolean isSelect =false;
     private int dragDirection;
 
-    private int offset = 20;
+    private int offset = 50;
 
     private RectF rect = new RectF();
     private RectF rectSrc = new RectF();
@@ -229,18 +231,25 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        if(option!=null&&!option.isDraw()){
+            if(!option.isDraw()){
+                left=getLeft();
+                top=getTop();
+                right=getRight();
+                bottom=getBottom();
+                dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
+                // 处理拖动事件
+                delDrag(v, event);
+                return !option.isDraw();
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
 
-//        if(isSelect){
-            left=getLeft();
-            top=getTop();
-            right=getRight();
-            bottom=getBottom();
-            dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
-            // 处理拖动事件
-            delDrag(v, event);
-//        }
+        
 
-        return true;
     }
 
 
@@ -255,9 +264,9 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     protected void delDrag(View v, MotionEvent event) {
         PointF endPoint=new PointF();
-
-
         endPoint=downMove(v,StartP,event);
+       
+
 
     }
 
@@ -269,7 +278,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                 break;
             case MotionEvent.ACTION_MOVE:
                 endPoint.set(event.getX()+getLeft(),event.getY()+getTop());
-                Log.e("daoyi","正在拖动");
+                Log.e("daoyi","正在拖动1");
                 if(isSelect){
                     int l_or_r= (int) (endPoint.x-StartP.x);
                     int t_or_b= (int) (endPoint.y-StartP.y);
@@ -300,9 +309,9 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                             Log.e("daoyi","right_bottom在拖动");
                             break;
                         case R.id.centers:
+                            right(l_or_r);
                             left(l_or_r);
                             bottom(t_or_b);
-                            right(l_or_r);
                             top(t_or_b);
                             Log.e("daoyi","center在拖动");
                             break;
@@ -331,7 +340,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                     case R.id.centers:
                         Log.i("i", "x1 - x2>>>>>>"+ distance);
                         if (distance < 15) { // 距离较小，当作click事件来处理
-                            setSelect(!isSelect);
+                            setSelect(true);
                         }
                         break;
                     case R.id.close:
@@ -382,8 +391,8 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         if (top < -offset) {
             top = -offset;
         }
-        if (bottom - top - 2 * offset < 200) {
-            top = bottom - 2 * offset - 200;
+        if (bottom - top - 2 * offset < 20) {
+            top = bottom - 2 * offset - 20;
         }
     }
 
@@ -398,7 +407,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 //        if (bottom > screenHeight + offset) {
 //            bottom = screenHeight + offset;
 //        }
-        if (bottom - top - 2 * offset < 200) {
+        if (bottom - top - 2 * offset < 20) {
             bottom = 200 + top + 2 * offset;
         }
     }
@@ -414,8 +423,8 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 //        if (right > screenWidth + offset) {
 //            right = screenWidth + offset;
 //        }
-        if (right - left - 2 * offset < 200) {
-            right = left + 2 * offset + 200;
+        if (right - left - 2 * offset < 20) {
+            right = left + 2 * offset + 20;
         }
     }
 
@@ -428,10 +437,13 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     private void left(int dx) {
         left += dx;
         if (left < -offset) {
-            left = -offset;
+            left = offset;
         }
-        if (right - left - 2 * offset < 200) {
-            left = right - 2 * offset - 200;
+//        if (right - left - 2 * offset < 200) {
+//            left = right - 2 * offset - 200;
+//        }
+        if (right - left - 2 * offset < 20) {
+            left = right - 2 * offset - 20;
         }
     }
     public void setOption(Option a){

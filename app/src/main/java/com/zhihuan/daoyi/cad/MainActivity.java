@@ -2,6 +2,7 @@ package com.zhihuan.daoyi.cad;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity  {
     private int currentX;
     private int currentY;
 
-    boolean drawingMode =true; //  绘制事件
+    boolean drawingMode =false; //  绘制事件
     int drawingType = -1; // 0： 矩形， 1： 圆形 2: 画笔
 
     boolean outSelect=false;
@@ -42,41 +43,65 @@ public class MainActivity extends AppCompatActivity  {
         activityMainBinding.maxBox.setListener(touchEventListener);
 //        activityMainBinding.maxBox.setOnTouchListener(this);
         activityMainBinding.rectBtn.setOnClickListener( v -> {
-            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
-            if(drawingType !=0 && !drawingMode){
-                drawingType = 0;
-                drawingMode=!drawingMode;
-            }else if(drawingType == 0&& drawingMode){
-                drawingMode =false;
-            }else if(drawingType == 0&& !drawingMode){
-                drawingMode = true;
-            }
+//            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
+            drawingType=0;
+            setCheck(!drawingMode);
+
         });
         activityMainBinding.circleBtn.setOnClickListener( v -> {
-            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
-            if(drawingType !=1 && !drawingMode){
-                drawingType = 1;
-                drawingMode=!drawingMode;
-            }else if(drawingType == 1&& drawingMode){
-                drawingMode =false;
-            }else if(drawingType == 1&& !drawingMode){
-                drawingMode = true;
-            }
+//            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
+            drawingType=1;
+            setCheck(!drawingMode);
         });
         activityMainBinding.canvasBtn.setOnClickListener( v -> {
-            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
-            if(drawingType !=2 && !drawingMode){
-                drawingType = 2;
-                drawingMode=!drawingMode;
-            }else if(drawingType == 2&& drawingMode){
-                drawingMode =false;
-            }else if(drawingType == 2&& !drawingMode){
-                drawingMode = true;
-            }
+//            Toast.makeText(this,"dsd",Toast.LENGTH_LONG).show();
+            drawingType=2;
+            setCheck(!drawingMode);
         });
 
     }
+    // 设置选中
+    private void setCheck(boolean select){
+        switch (drawingType){
+            case 0:
+                if(select){
+                    activityMainBinding.rectBtn.setChecked(true);
+                }else{
+                    activityMainBinding.rectBtn.setChecked(false);
+                }
+                activityMainBinding.circleBtn.setChecked(false);
+                activityMainBinding.canvasBtn.setChecked(false);
+                break;
+            case 1:
+                if(select){
+                    activityMainBinding.circleBtn.setChecked(true);
+                }else{
+                    activityMainBinding.circleBtn.setChecked(false);
+                }
+                activityMainBinding.rectBtn.setChecked(false);
+                activityMainBinding.canvasBtn.setChecked(false);
+                break;
+            case 2:
+                if(select){
+                    activityMainBinding.canvasBtn.setChecked(true);
+                }else{
+                    activityMainBinding.canvasBtn.setChecked(false);
+                }
+                activityMainBinding.rectBtn.setChecked(false);
+                activityMainBinding.circleBtn.setChecked(false);
+
+                break;
+        }
+        drawingMode=select;
+    }
+
+
     TouchEventListener touchEventListener=new TouchEventListener() {
+        @Override
+        public void BackBitmap(Bitmap bitmap) {
+//            activityMainBinding.back.setImageBitmap(bitmap);
+        }
+
         @Override
         public void addViews(DragBaseView dragBaseView) {
             activityMainBinding.maxBox.addView(dragBaseView);
@@ -100,6 +125,7 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public boolean DrawingCloseCall(boolean close) {
             drawingMode = close;
+            setCheck(drawingMode);
             return drawingMode;
         }
     };
