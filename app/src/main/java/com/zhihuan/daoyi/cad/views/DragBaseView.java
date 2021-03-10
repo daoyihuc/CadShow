@@ -50,6 +50,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     }
     private Option option=null;
     public boolean isSelect =false;
+    public int isSelectNum =0;
     private int dragDirection;
 
     private int offset = 50;
@@ -114,12 +115,6 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
         lb1.setOnTouchListener(this);
         rt1.setOnTouchListener(this);
         rb1.setOnTouchListener(this);
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isSelect=true;
-            }
-        });
 
         view.close.setOnTouchListener(this);
         if(types==0){
@@ -130,6 +125,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             scaleRectView.setId(R.id.centers);
             center.addView(scaleRectView);
             scaleRectView.setOnTouchListener(this);
+            scaleRectView.setOnClickListener(clickListener);
         }else  if(types==1){
             scaleCircleView =new DragScaleCircleView(mContext);
             LayoutParams params=new LayoutParams(-1,-1);
@@ -138,14 +134,17 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             scaleCircleView.setId(R.id.centers);
             center.addView(scaleCircleView);
             scaleCircleView.setOnTouchListener(this);
+            scaleCircleView.setOnClickListener(clickListener);
         }else if(types==2){
             canvas =new ImageView(mContext);
             LayoutParams params=new LayoutParams(-1,-1);
             canvas.setLayoutParams(params);
             canvas.setClickable(true);
+//            canvas.setEnabled(true);
             canvas.setId(R.id.centers);
             center.addView(canvas);
             canvas.setOnTouchListener(this);
+            canvas.setOnClickListener(clickListener);
         }
 
         initScreenW_H();
@@ -211,15 +210,21 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     };
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        if(option!=null&&option.isDraw()){
+            return false;
+        }
+       return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         return super.onTouchEvent(event);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        if(!isSelect){
-//            return true;
-//        }
         return super.onInterceptTouchEvent(ev);
     }
 
@@ -229,10 +234,12 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     float bottom=0;
 
 
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(option!=null&&!option.isDraw()){
-            if(!option.isDraw()){
+        if(option!=null&&!option.isDraw()){ // 父组件没有绘制
+
+            if(isSelect){
                 left=getLeft();
                 top=getTop();
                 right=getRight();
@@ -240,16 +247,12 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                 dragDirection = getDirection(v,(int) event.getX()+getLeft(),(int) event.getY()+getTop());
                 // 处理拖动事件
                 delDrag(v, event);
-                return !option.isDraw();
-            }else{
-                return false;
+                return true;
             }
         }else{
             return false;
         }
-
-        
-
+        return false;
     }
 
 
@@ -339,7 +342,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
                 switch (v.getId()){
                     case R.id.centers:
                         Log.i("i", "x1 - x2>>>>>>"+ distance);
-                        if (distance < 15) { // 距离较小，当作click事件来处理
+                        if (distance < 5f) { // 距离较小，当作click事件来处理
                             setSelect(true);
                         }
                         break;
