@@ -1,5 +1,6 @@
 package com.zhihuan.daoyi.cad.interfaces;
 
+import android.graphics.Bitmap;
 import android.view.MotionEvent;
 
 import com.zhihuan.daoyi.cad.views.DragBaseView;
@@ -11,6 +12,7 @@ import com.zhihuan.daoyi.cad.views.DragBaseView;
  * @date :
  */
 public interface TouchEventListener{
+    void BackBitmap(Bitmap bitmap);
     void addViews(DragBaseView dragBaseView);
     boolean dispatchTouchEvent(MotionEvent event);
     boolean DrawingOption(); // 绘制事件

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
@@ -86,7 +88,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     Bitmap bitmap2;
     boolean first = true;
 
-    boolean touchChild = false; // 子类消费事件
+    boolean touchChild = true; // 子类消费事件
     boolean touchParent = false; // 父类消费事件
     boolean touchDraw = false;// 绘制事件
     boolean touch = true; // 父类消费事件
@@ -111,6 +113,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
      */
     private Matrix currentMatrix = new Matrix();
     RectF rect=new RectF();
+    Path path=new Path();
 
 
 
@@ -148,13 +151,19 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return touchDraw;
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return s(event);
+        judgment(event);
+        return  s(event);
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        return false;
+        return s(event);
     }
 
 
@@ -164,6 +173,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         // 优先级计算
         judgment(event);
         if (touch) {
+            Log.e("daoyi","本地事件消费");
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 // 手指压下屏幕
                 case MotionEvent.ACTION_DOWN:
@@ -171,11 +181,13 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                     // 记录ImageView当前的移动位置
                     startPoint.set(event.getRawX(), event.getRawY());
                     drawPoint.set(event.getRawX(), event.getRawY());
+                    path.moveTo(event.getX(),event.getY());
                     if (mListener != null && mListener.DrawingOption()) {
                         Log.e("daoyi", "绘制模式");
                         Log.e("daoyi", "downx:"+getXm(event));
                         Log.e("daoyi", "downy:"+getYm(event));
                         DrawingAdd(event, mListener.DrawingType());
+
                     }else{
 //                        currentMatrix.set(matrix);
                     }
@@ -183,13 +195,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 // 手指在屏幕上移动，改事件会被不断触发
                 case MotionEvent.ACTION_MOVE:
                     if (mListener != null && mListener.DrawingOption()) {
-                        Log.e("daoyi", "绘制模式");
-                        Log.e("daoyi", "绘制类型：" + mListener.DrawingType());
-                        if(mListener!=null){
-                            DrawingMove(event, dragBaseView,mListener.DrawingType());
-                        }
-
-
+                        DrawingMove(event, dragBaseView,mListener.DrawingType());
                     } else {
                         MatrixF(event);
 
@@ -200,16 +206,20 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 // 手指离开屏幕
                 case MotionEvent.ACTION_UP:
                     // 当触点离开屏幕，但是屏幕上还有触点(手指)
+                    if (mListener != null && mListener.DrawingOption()) {
+                        Bitmap bitmap = loadBitmapFromViewBySystem();
+                        if(bitmap!=null){
+                            touchDraw = false;
+                            mListener.DrawingCloseCall(false);
+                            mListener.BackBitmap(bitmap);
+                            bitmap.recycle();
+                            removeAllViews();
+                        }
 
+
+                    }
                 case MotionEvent.ACTION_POINTER_UP:
                     mode = 0;
-                    if(bitmap2!=null){
-//                        bitmap2.recycle();
-                    }
-
-                    if (mListener != null && mListener.DrawingOption()) {
-                        mListener.DrawingCloseCall(false);
-                    }
 
                     break;
                 // 当屏幕上已经有触点(手指)，再有一个触点压下屏幕
@@ -240,13 +250,14 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     // 绘制事件
     private void DrawingAdd(MotionEvent event, int type) {
         MotionEvent event1=event;
+        CanvasOption canvasOption=new CanvasOption();
         if(type!=2){
-            params = new LayoutParams(20, 20);
+            params = new LayoutParams(0, 0);
+            params.setMargins((int) getXm(event), (int) getYm(event), 0, 0);
         }else{
-            params = new LayoutParams(screenWidth/2, screenHeight/2);
+            params = new LayoutParams((int)(screenWidth),(int)(screenHeight));
+            params.setMargins((int) (getXm(event)-event.getRawX()), (int) (getYm(event)-event.getRawY()), 0, 0);
         }
-
-        params.setMargins((int) getXm(event), (int) getYm(event), 0, 0);
         dragBaseView = new DragBaseView(mContext, type, ids);
         dragBaseView.setLayoutParams(params);
         dragBaseView.setOption(childOption);
@@ -260,7 +271,6 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         if(type==2){
             initPaint(null);
             initCanvas(null);
-
         }
         ids++;
     }
@@ -269,6 +279,16 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         @Override
         public int Type() {
             return 0;
+        }
+
+        @Override
+        public boolean isDraw() {
+            if(mListener!=null){
+                return mListener.DrawingOption();
+            }else{
+                return false;
+            }
+
         }
 
         @Override
@@ -306,19 +326,16 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 wx = (int) (endx - startPoint.x);
             } else if(endx<startPoint.x){
                 wx = (int) (startPoint.x - endx);
-            }else {
-                wx = 30;
+            }else{
+                wx = 10;
             }
             if (endy > startPoint.y) {
                 hy = (int) (endy - startPoint.y);
             } else if(endy<startPoint.y) {
                 hy = (int) (startPoint.y - endy);
-            }else {
-                hy = 30;
+            }else{
+                hy = 10;
             }
-
-
-
             if(type!=2){
                 params.width = wx;
                 params.height = hy;
@@ -326,22 +343,14 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
             }
 
             if(type==2){
-//                bitmap2.setWidth(wx);
-//                bitmap2.setHeight(hy);
-                if(wx>params.width*2){
-                    params.width = (int) (wx*1.2);
-                }
-                if(hy>params.height*2){
-                    params.height = (int) (hy*1.2);
-                }
-                v.setLayoutParams(params);
-//                v.setLayoutParams(params);
-                canvas.drawLine(drawPoint.x,drawPoint.y,endx,endy,paint);
 
-//                canvas.clipRect(new RectF(drawPoint.x,drawPoint.y,endx,endy));
+                float a=bitmap2.getWidth()/screenWidth;
+                float b=bitmap2.getHeight()/screenHeight;
+                v.setLayoutParams(params);
+                canvas.drawLine(drawPoint.x,drawPoint.y,
+                        event.getRawX(),event.getRawY(),paint);
                 drawPoint.set(event.getRawX(),event.getRawY());
                 dragBaseView.setBitmap(bitmap2);
-
             }
 
         } else {
@@ -369,8 +378,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 matrix=new Matrix();
 //                scaleA= (startDis-endDis)/(startDis+endDis);
                 scaleA= (endDis-startDis);
-                float a= (float) (scaleN+(scaleN+scaleA)/getWidth());
-                float b= (float) (scalY+(scalY+scaleA)/getHeight());
+                float a= (float) (scaleN+(scaleN+scaleA)/getWidth()+0.001);
+                float b= (float) (scalY+(scalY+scaleA)/getHeight()+0.001);
                 matrix.set(currentMatrix);
                 matrix.postScale(a, b, midPoint.x, midPoint.y);
 
@@ -418,9 +427,11 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
             touchDraw = mListener.DrawingOption();
         }
         if (touchDraw) {
-            touch = touchDraw;
+            touch = true;
             clearSelect();
-        } else if (touchChild) {
+            return;
+        }
+        if (touchChild) {
             int count = 0;
             for(int i=0;i<listBase.size();i++){
                 Rect rect=new Rect();
@@ -493,7 +504,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
 
         }else{
             paint.setAntiAlias(true);
-            paint.setStrokeWidth(4f);
+            paint.setStrokeWidth(6f);
             paint.setColor(Color.RED);
             paint.setStyle(Paint.Style.STROKE);
         }
@@ -501,15 +512,16 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     }
 
     private void initCanvas(CanvasOption canvasOption){
-        bitmap2= Bitmap.createBitmap(screenWidth,screenHeight, Bitmap.Config.ARGB_8888);
-        canvas=new Canvas(bitmap2);
+
+
 
 //        canvas.setBitmap(bitmap2);
         if(canvasOption!=null){
-
+            bitmap2= Bitmap.createBitmap(canvasOption.getWidth(),canvasOption.getHeight(), Bitmap.Config.ARGB_8888);
         }else{
-
+            bitmap2= Bitmap.createBitmap(screenWidth,screenHeight, Bitmap.Config.ARGB_4444);
         }
+        canvas=new Canvas(bitmap2);
     }
 
     /**
@@ -538,12 +550,20 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     // getx
     private float getXm2(float x){
         int a = screenWidth/getWidth();
-        return (float) (x*scaleW);
+        return (float)Math.abs(x);
     }
     // gety
     private float getYm2(float y){
         int a = screenHeight/(getHeight()-40);
-        return (float) Math.abs(y*scaleH);
+        return (float) Math.abs(y);
     }
 
+
+    public  Bitmap loadBitmapFromViewBySystem() {
+
+        setDrawingCacheEnabled(true);
+        buildDrawingCache();
+        Bitmap bitmap = getDrawingCache();
+        return bitmap;
+    }
 }

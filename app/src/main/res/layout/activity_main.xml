@@ -55,7 +55,9 @@
                     android:layout_height="2000dp"
                     android:layout_gravity="center"
                     >
-                    <ImageView android:src="@drawable/test"
+                    <ImageView
+                        android:id="@+id/back"
+                        android:src="@drawable/test"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
@@ -80,16 +82,17 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         >
-        <TextView
-            android:id="@+id/rect_btn"
+        <CheckBox
+            android:id="@+id/rectBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="矩形"
             android:textColor="@color/black"
             android:background="@color/white"
             android:padding="10dp"
+            android:theme="@style/myCheck"
             />
-        <TextView
+        <CheckBox
             android:id="@+id/circle_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,8 +101,9 @@
             android:background="@color/white"
             android:padding="10dp"
             android:layout_marginLeft="10dp"
+            android:theme="@style/myCheck"
             />
-        <TextView
+        <CheckBox
             android:id="@+id/canvas_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -108,6 +112,7 @@
             android:background="@color/white"
             android:padding="10dp"
             android:layout_marginLeft="10dp"
+            android:theme="@style/myCheck"
             />
     </LinearLayout>
 </RelativeLayout>
