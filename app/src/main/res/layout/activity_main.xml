@@ -7,74 +7,53 @@
     android:layout_height="match_parent"
     android:id="@+id/rootBox"
     tools:context=".MainActivity"
-    android:background="#000000"
     android:orientation="vertical"
+    android:background="@color/black"
     >
 
 
-
-
-<!--    <RelativeLayout-->
-<!--        android:id="@+id/maxBox2"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:scaleX="2"-->
-<!--        android:scaleY="2"-->
-<!--        >-->
-
-<!--    </RelativeLayout>-->
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-<!--        <RelativeLayout android:id="@+id/maxBox"-->
-<!--            android:layout_width="2000dp"-->
-<!--            android:layout_height="2000dp"-->
-<!--            android:orientation="horizontal">-->
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/title"
+        >
 
-<!--            <ImageView android:src="@drawable/test"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"/>-->
-
-<!--            <com.zhihuan.daoyi.cad.views.DragBaseView-->
-<!--                android:layout_width="200dp"-->
-<!--                android:layout_height="200dp"-->
-<!--                />-->
-<!--        </RelativeLayout>-->
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+        <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
+            android:id="@+id/maxBox"
+            android:layout_width="500dp"
+            android:layout_height="500dp"
+            android:layout_gravity="center"
             >
-            <FrameLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                >
-                <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
-                    android:id="@+id/maxBox"
-                    android:layout_width="2000dp"
-                    android:layout_height="2000dp"
-                    android:layout_gravity="center"
-                    >
-                    <ImageView
-                        android:id="@+id/back"
-                        android:src="@drawable/test"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        />
+                android:src="@drawable/test" />
 
-                    <!--            <com.zhihuan.daoyi.cad.views.DragBaseView-->
-                    <!--                android:layout_width="200dp"-->
-                    <!--                android:layout_height="200dp"-->
-                    <!--                />-->
-                </com.zhihuan.daoyi.cad.views.DragFrameLayoutView>
-
-            </FrameLayout>
-
-        </RelativeLayout>
+            <!--            <com.zhihuan.daoyi.cad.views.DragBaseView-->
+            <!--                android:layout_width="200dp"-->
+            <!--                android:layout_height="200dp"-->
+            <!--                />-->
+        </com.zhihuan.daoyi.cad.views.DragFrameLayoutView>
 
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/down_message"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:layout_margin="20dp"
+        android:padding="5dp"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -82,37 +61,55 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         >
+        <ImageView
+            android:id="@+id/touch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_baseline_touch_app_24"
+            android:background="@color/white"
+            />
         <CheckBox
             android:id="@+id/rectBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:text="矩形"
             android:textColor="@color/black"
             android:background="@color/white"
-            android:padding="10dp"
             android:theme="@style/myCheck"
             />
         <CheckBox
             android:id="@+id/circle_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:text="圆形"
             android:textColor="@color/black"
             android:background="@color/white"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
             android:theme="@style/myCheck"
             />
         <CheckBox
             android:id="@+id/canvas_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:text="画笔"
             android:textColor="@color/black"
             android:background="@color/white"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
             android:theme="@style/myCheck"
             />
+
+        <CheckBox
+            android:id="@+id/text_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="文字"
+            android:textColor="@color/black"
+            android:background="@color/white"
+            android:theme="@style/myCheck"
+            />
+
     </LinearLayout>
 </RelativeLayout>
