@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -19,6 +20,7 @@ import android.view.DragAndDropPermissions;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -26,11 +28,14 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
+import com.zhihuan.daoyi.cad.Dialogs.InputDialog;
 import com.zhihuan.daoyi.cad.R;
+import com.zhihuan.daoyi.cad.help.tes;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.objects.CanvasOption;
 import com.zhihuan.daoyi.cad.objects.PaintsOPtion;
 import com.zhihuan.daoyi.cad.utils.CalcuLationUtils;
+import com.zhihuan.daoyi.cad.utils.MacUtils;
 import com.zhihuan.daoyi.cad.utils.MatrixUtils;
 
 import java.util.ArrayList;
@@ -61,6 +66,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
      * 用于记录开始时候的坐标位置
      */
     private PointF startPoint = new PointF(); // 记录屏幕开始
+    private PointF startPointFinal = new PointF(); // 记录屏幕开始
     private PointF startPointBox = new PointF(); // 记录自身
     private PointF drawPoint = new PointF();
 
@@ -79,6 +85,9 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     DragScaleCircleView scaleCircleView;
     DragScaleRectView scaleRectView;
     DragBaseView dragBaseView;
+    InputDialog dialog;// 文字输入框
+
+
 
     List<DragScaleCircleView> listCircle = new ArrayList<>();
     List<DragScaleRectView> listRect = new ArrayList<>();
@@ -107,8 +116,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     private int screenHeight;
     private int screenWidth;
     // 累计放大
-    float scaleN = 0f;
-    float scalY = 0f;
+    float scaleN = 1f;
+    float scalY = 1f;
 
     private float scaleA;
     double scaleW,scaleH;
@@ -197,12 +206,16 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                     mode = MODE_DRAG;
                     // 记录ImageView当前的移动位置
                     startPoint.set(event.getRawX(), event.getRawY());
+                    startPointFinal.set(event.getRawX(), event.getRawY());
                     startPointBox.set(event.getX(), event.getY());
                     drawPoint.set(event.getRawX(), event.getRawY());
                     listPoint.add(new PointF(event.getRawX(),event.getRawY()));
                     listPointX.add(new PointF(event.getX(),event.getX()));
                     path.moveTo(event.getX(),event.getY());
-                    if (mListener != null && mListener.DrawingOption()) {
+                    if (mListener != null && mListener.DrawingOption()
+                            &&mListener.DrawingType()!=10
+                            &&mListener.DrawingType()!=3
+                    ) {
                         Log.e("daoyi", "绘制模式");
                         Log.e("daoyi", "downx:"+getXm(event));
                         Log.e("daoyi", "downy:"+getYm(event));
@@ -212,29 +225,38 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                     break;
                 // 手指在屏幕上移动，改事件会被不断触发
                 case MotionEvent.ACTION_MOVE:
-                    if (mListener != null && mListener.DrawingOption()) {
+                    if (mListener != null && mListener.DrawingOption()
+                            &&mListener.DrawingType()!=10
+                            &&mListener.DrawingType()!=3
+                    ) {
                         DrawingMove(event, dragBaseView,mListener.DrawingType());
                     } else {
                         MatrixF(event);
-//                        invalidate();
                     }
                     break;
                 // 手指离开屏幕
                 case MotionEvent.ACTION_UP:
                     // 当触点离开屏幕，但是屏幕上还有触点(手指)
                     if (mListener != null && mListener.DrawingOption()) {
-                        if(mListener.DrawingType()==2){
-                            RectF rectF = CutView(event);
-
+                        int type=mListener.DrawingType();
+                        if(type==2){
+                            Rect rectF = CutView(event); // 画笔裁剪
+                        }else if(type == 3){ // 文字弹窗
+                            if(distance2(event)<15f){
+                                dialog=new InputDialog(mContext, new InputDialog.BackLister() {
+                                    @Override
+                                    public void getValue(String value) {
+                                        MacUtils.ToastShow(mContext,value,-2,-2);
+                                        DrawingAdd(event,3);
+                                        dragBaseView.setText(value);
+                                        mListener.DrawingCloseCall(false);
+                                    }
+                                });
+                                dialog.show();
+                            }
                         }
-
-                        Bitmap bitmap = loadBitmapFromViewBySystem();
-                        if(bitmap!=null){
-                            touchDraw = false;
-//                            mListener.DrawingCloseCall(false);
-//                            mListener.BackBitmap(bitmap);
-                            bitmap.recycle();
-                            removeAllViews();
+                        if(type==0||type==1){
+                            mListener.DrawingCloseCall(false);
                         }
                         // 裁剪view
                     }
@@ -244,8 +266,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 // 当屏幕上已经有触点(手指)，再有一个触点压下屏幕
                 case MotionEvent.ACTION_POINTER_DOWN:
                     mode = MODE_ZOOM;
-                    scaleN = getScaleX();
-                    scalY = getScaleY();
+//                    scaleN = getScaleX();
+//                    scalY = getScaleY();
                     /** 计算两个手指间的距离 */
                     if (event.getPointerCount() == 2) {
                         startDis = distance(event);
@@ -253,8 +275,8 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                     /** 计算两个手指间的中间点 */
                     if (startDis > 10f) { // 两个手指并拢在一起的时候像素大于10
                         midPoint = mid(event);
-//                        currentMatrix.set(matrix);
                     }
+
                     break;
             }
         }
@@ -308,12 +330,19 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     private void DrawingAdd(MotionEvent event, int type) {
         MotionEvent event1=event;
         CanvasOption canvasOption=new CanvasOption();
-        if(type!=2){
+        if(type!=2&&type!=10&&type!=3){
             params = new LayoutParams(0, 0);
             params.setMargins((int) getXm(event), (int) getYm(event), 0, 0);
-        }else{
+        }else if(type==2){
             params = new LayoutParams((int)(screenWidth),(int)(screenHeight));
             params.setMargins((int) (getXm2(startPointBox.x)-startPoint.x), (int) (getYm2(startPointBox.y)-startPoint.y), 0, 0);
+        }else if(type==3){
+            params = new LayoutParams(200, 200);
+            params.setMargins((int) getXm2(startPointBox.x)-200/2, (int) getYm2(startPointBox.y)-200-2, 0, 0);
+        }
+        if(type==2){
+            initPaint(null);
+            initCanvas(null);
         }
         dragBaseView = new DragBaseView(mContext, type, ids);
         dragBaseView.setLayoutParams(params);
@@ -324,10 +353,6 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         listBase.add(dragBaseView);
         listBaseEnd.add(dragBaseView);
         listParams.add(params);
-        if(type==2){
-            initPaint(null);
-            initCanvas(null);
-        }
         ids++;
     }
 
@@ -343,21 +368,29 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
 
         if (v != null) {
             int wx, hy; // 最重的宽高
-            if (endx > startPoint.x) {
-                wx = (int) (endx - startPoint.x);
-            } else if(endx<startPoint.x){
-                wx = (int) (startPoint.x - endx);
-            }else{
-                wx = 10;
-            }
-            if (endy > startPoint.y) {
-                hy = (int) (endy - startPoint.y);
-            } else if(endy<startPoint.y) {
-                hy = (int) (startPoint.y - endy);
-            }else{
-                hy = 10;
-            }
-            if(type!=2){
+
+            if(type==0||type==1){
+
+                if (endx > startPoint.x) {
+                    wx = (int) (endx - startPoint.x);
+//                    params.setMargins((int) getXm2(startPointBox.x),params.topMargin,0,0);
+                } else if(endx<startPoint.x){
+                    wx = (int) (startPoint.x - endx);
+                    params.setMargins((int) (getXm2(startPointBox.x)-wx),params.topMargin,0,0);
+                }else{
+                    wx = 10;
+                    params.setMargins((int) (getXm2(startPointBox.x)-wx),params.topMargin,0,0);
+                }
+                if (endy > startPoint.y) {
+                    hy = (int) (endy - startPoint.y);
+//                    params.setMargins(params.leftMargin, (int) getYm2(startPointBox.y),0,0);
+                } else if(endy<startPoint.y) {
+                    hy = (int) (startPoint.y - endy);
+                    params.setMargins(params.leftMargin, (int) (getYm2(startPointBox.y)-hy),0,0);
+                }else{
+                    hy = 10;
+                    params.setMargins(params.leftMargin, (int) (getYm2(startPointBox.y)-hy),0,0);
+                }
                 params.width = wx;
                 params.height = hy;
                 v.setLayoutParams(params);
@@ -384,12 +417,15 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         float scaleB=0f;
         // 拖拉图片
         if (mode == MODE_DRAG) {
-            float dx =startPoint.x- event.getRawX() ; // 得到x轴的移动距离
-            float dy =startPoint.y- event.getRawY() ; // 得到x轴的移动距离
-            // 在没有移动之前的位置上进行移动
-            scrollBy((int) dx,(int) dy);
-            startPoint.set(event.getRawX(),event.getRawY());
-            startPointBox.set(event.getX(), event.getY());
+            if(event.getPointerCount()<2){
+                float dx =startPoint.x- event.getRawX() ; // 得到x轴的移动距离
+                float dy =startPoint.y- event.getRawY() ; // 得到x轴的移动距离
+                // 在没有移动之前的位置上进行移动
+                scrollBy((int) dx,(int) dy);
+                startPoint.set(event.getRawX(),event.getRawY());
+                startPointBox.set(event.getX(), event.getY());
+            }
+
         }
         // 放大缩小图片
         else if (mode == MODE_ZOOM) {
@@ -401,16 +437,26 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                 float a= (float) (scaleN+(scaleA));
                 float b= (float) (scalY+(scaleA));
                 matrix.set(currentMatrix);
-                matrix.postScale(a, b, midPoint.x, midPoint.y);
-                mWidthEnd= mWidth+(int) MatrixUtils.getMatrixScaleX(mWidth,matrix);
-                mHeightEnd= mHeight+(int) MatrixUtils.getMatrixScaleY(mHeight,matrix);
-                scaleW=CalcuLationUtils.div(mWidthEnd,mWidth,2);
-                scaleH=CalcuLationUtils.div(mHeightEnd,mHeight,2);
-                if(a>0.2&&a<3){
+//                matrix.postScale(a, b, midPoint.x, midPoint.y);
+                if(a>0.4&&a<3){
+                    setPivotX(midPoint.x);
+                    setPivotY(midPoint.y);
                     setScaleX(a);
+                    setScaleY(a);
+                    scaleN=a;
+                }else if(a<=0.4){
+//                    setPivotX(getWidth()/2);
+//                    setPivotY(getHeight()/2);
+                    setScaleX(0.4f);
+                    setScaleY(0.4f);
+                }else if(a>=3){
+//                    setPivotX(getWidth()/2);
+//                    setPivotY(getHeight()/2);
+                    setScaleX(3f);
+                    setScaleY(3f);
                 }
                 if(b>0.2&&b<3){
-                    setScaleY(b);
+//                    setScaleY(b);
                 }
             }
             Log.e("daoyi_10",""+mWidthEnd);
@@ -485,6 +531,16 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     private float distance(MotionEvent event) {
         float dx = event.getX(1) - event.getX(0);
         float dy = event.getY(1) - event.getY(0);
+        /** 使用勾股定理返回两点之间的距离 */
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * 计算两个手指间的距离
+     */
+    private float distance2(MotionEvent event) {
+        float dx = event.getRawX() - startPointFinal.x;
+        float dy = event.getRawY() - startPointFinal.y;
         /** 使用勾股定理返回两点之间的距离 */
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
@@ -648,8 +704,10 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
     }
 
     // 重新测量view并进行裁剪
-    private RectF CutView(MotionEvent event){
-        RectF rectF=new RectF();
+    Rect rectF=new Rect();
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private Rect CutView(MotionEvent event){
+
         PointF pointMax = MaxPonit();
         PointF pointMin = MinPonit();
 
@@ -662,71 +720,46 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         if(pointMin.y==0){
             pointMin.y=1f;
         }
-        float dx = pointMax.x - pointMin.x;
-        float dy = pointMax.y - pointMin.y;
+        int dx = (int) (pointMax.x - pointMin.x);
+        int dy = (int) (pointMax.y - pointMin.y);
         if(dx<=0){
-            dx=10f;
+            dx=10;
         }else if(dy<=0){
-            dy=10f;
+            dy=10;
         }
         rectF.set(0,0,dx,dy);
 
 
         params.width = (int) rectF.width();
         params.height = (int) rectF.height();
-        CanvasOption canvasOption=new CanvasOption();
-        canvasOption.setWidth((int) rectF.width());
-        canvasOption.setHeight((int) rectF.height());
-        Canvas canvast=new Canvas();
-
-        if(startPointBox.x<pointMinX.x){
-            params.setMargins((int) (getXm2(pointMinX.x)),
-                    (int) (getYm2(startPointBox.y)), 0, 0);
-            if(startPointBox.y<pointMinX.y){
-                params.setMargins((int) (getXm2(pointMinX.x)),
-                        (int) (getYm2(pointMinX.y)), 0, 0);
-            }else{
-                params.setMargins((int) (getXm2(pointMinX.x)),
-                        (int) (getYm2(startPointBox.y)), 0, 0);
-            }
-        }else{
-            params.setMargins((int) (getXm2(startPointBox.x)),
-                    (int) (getYm2(startPointBox.y)), 0, 0);
-            if(startPointBox.y<pointMinX.y){
-                params.setMargins((int) (getXm2(startPointBox.x)),
-                        (int) (getYm2(pointMinX.y)), 0, 0);
-            }else{
-                params.setMargins((int) (getXm2(startPointBox.x)),
-                        (int) (getYm2(startPointBox.y)), 0, 0);
-            }
-
-        }
+//        CanvasOption canvasOption=new CanvasOption();
+//        canvasOption.setWidth((int) rectF.width());
+//        canvasOption.setHeight((int) rectF.height());
+//        Canvas canvast=new Canvas();
+//        dragBaseView.setOutlineProvider(new tes(rectF));
 
 
-        if(listPoint.size()>0){
-            PointF s=listPoint.get(0);
-        }
 
-        dragBaseView.setLayoutParams(params);
-//        if(rectF.width()>0&&rectF.height()>0){
-//            Bitmap bitmap1= Bitmap.createBitmap((int)rectF.width(),(int)rectF.height(), Bitmap.Config.ARGB_4444);
-//            canvas.setBitmap(bitmap1);
-//            for(int i=1;i<listPoint.size();i++){
-//                PointF e=listPoint.get(i);
-//                canvast.drawLine(s.x,s.y,e.x,e.y,paint);
-//                s.set(e);
+//        if(listPoint.size()>0){
+//            PointF s=listPoint.get(0);
+//            if(rectF.width()>0&&rectF.height()>0){
+//                Bitmap bitmap1= Bitmap.createBitmap((int)rectF.width(),(int)rectF.height(), Bitmap.Config.ARGB_4444);
+//                canvas.setBitmap(bitmap1);
+//                for(int i=1;i<listPoint.size();i++){
+//                    PointF e=listPoint.get(i);
+//                    canvast.drawLine(s.x,s.y,e.x,e.y,paint);
+//                    s.set(e);
+//                }
 //            }
 //        }
-
         if(rectF.width()>0&&rectF.height()>0&&pointMin.x+rectF.width()<screenWidth&&pointMin.y+rectF.height()<screenHeight){
-
+            params.setMargins((int) (params.leftMargin+pointMin.x),
+                    (int) (params.topMargin+pointMin.y), 0, 0);
             Bitmap bitmap=Bitmap.createBitmap(bitmap2,(int) pointMin.x,(int)pointMin.y,(int)dx,(int)dy);
             dragBaseView.setBitmap(bitmap);
+            dragBaseView.setLayoutParams(params);
             listPoint.clear();
         }
-
-//        bitmap2.recycle();
-
         listPoint.clear();
 
 

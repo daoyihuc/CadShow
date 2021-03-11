@@ -3,18 +3,22 @@ package com.zhihuan.daoyi.cad.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.databinding.BaseviewBinding;
@@ -53,7 +57,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     public int isSelectNum =0;
     private int dragDirection;
 
-    private int offset = 50;
+    private int offset = 20;
 
     private RectF rect = new RectF();
     private RectF rectSrc = new RectF();
@@ -98,7 +102,8 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
     DragScaleRectView scaleRectView; // 矩形 0
     DragScaleCircleView scaleCircleView; // 圆形 1
     ImageView canvas; // 画板盒子 2
-    int types=0; // 0：矩形 1:圆形
+    TextView textView; // 文字 3
+    int types=0; // 0：矩形 1:圆形 2：画板 3：文字
 
 
     private void init(){
@@ -137,14 +142,28 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             scaleCircleView.setOnClickListener(clickListener);
         }else if(types==2){
             canvas =new ImageView(mContext);
-            LayoutParams params=new LayoutParams(-1,-1);
+            LayoutParams params=new LayoutParams(-2,-2);
             canvas.setLayoutParams(params);
+            canvas.setScaleType(ImageView.ScaleType.FIT_START);
             canvas.setClickable(true);
 //            canvas.setEnabled(true);
             canvas.setId(R.id.centers);
             center.addView(canvas);
             canvas.setOnTouchListener(this);
             canvas.setOnClickListener(clickListener);
+        }else if(types==3){
+            textView =new TextView(mContext);
+            LayoutParams params=new LayoutParams(-1,-1);
+            textView.setLayoutParams(params);
+            textView.setClickable(true);
+            textView.setText("hello word");
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextSize(18);
+            textView.setTextColor(Color.parseColor("#FF0828"));
+            textView.setId(R.id.centers);
+            center.addView(textView);
+            textView.setOnTouchListener(this);
+            textView.setOnClickListener(clickListener);
         }
 
         initScreenW_H();
@@ -225,6 +244,7 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+
         return super.onInterceptTouchEvent(ev);
     }
 
@@ -374,6 +394,14 @@ public class DragBaseView extends RelativeLayout implements View.OnTouchListener
             post(() -> {
                 canvas.setImageBitmap(bitmap);
             });
+        }
+    }
+    // 文本设置文字
+    public void setText(String text){
+        if(textView!=null){
+            if(!TextUtils.isEmpty(text)){
+                textView.setText(text);
+            }
         }
     }
 
