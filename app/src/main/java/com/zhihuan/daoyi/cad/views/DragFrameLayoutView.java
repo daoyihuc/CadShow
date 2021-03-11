@@ -2,41 +2,28 @@ package com.zhihuan.daoyi.cad.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.DragAndDropPermissions;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewOutlineProvider;
-import android.view.animation.ScaleAnimation;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
 import com.zhihuan.daoyi.cad.Dialogs.InputDialog;
 import com.zhihuan.daoyi.cad.R;
-import com.zhihuan.daoyi.cad.help.tes;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.objects.CanvasOption;
 import com.zhihuan.daoyi.cad.objects.PaintsOPtion;
-import com.zhihuan.daoyi.cad.utils.CalcuLationUtils;
-import com.zhihuan.daoyi.cad.utils.MacUtils;
-import com.zhihuan.daoyi.cad.utils.MatrixUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -246,7 +233,7 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
                                 dialog=new InputDialog(mContext, new InputDialog.BackLister() {
                                     @Override
                                     public void getValue(String value) {
-                                        MacUtils.ToastShow(mContext,value,-2,-2);
+//                                        MacUtils.ToastShow(mContext,value,-2,-2);
                                         DrawingAdd(event,3);
                                         dragBaseView.setText(value);
                                         mListener.DrawingCloseCall(false);
@@ -430,33 +417,23 @@ public class DragFrameLayoutView extends RelativeLayout implements View.OnTouchL
         // 放大缩小图片
         else if (mode == MODE_ZOOM) {
             float endDis = distance(event);// 结束距离
-            if (endDis > 30f) {
+            if (endDis > 10f) {
                 matrix=new Matrix();
                 scaleA= (endDis-startDis)/(startDis+endDis);
 //                scaleA= (endDis-startDis);
                 float a= (float) (scaleN+(scaleA));
                 float b= (float) (scalY+(scaleA));
                 matrix.set(currentMatrix);
-//                matrix.postScale(a, b, midPoint.x, midPoint.y);
-                if(a>0.4&&a<3){
-                    setPivotX(midPoint.x);
-                    setPivotY(midPoint.y);
+                if(a>0.4&&a<5){
                     setScaleX(a);
                     setScaleY(a);
                     scaleN=a;
                 }else if(a<=0.4){
-//                    setPivotX(getWidth()/2);
-//                    setPivotY(getHeight()/2);
-                    setScaleX(0.4f);
-                    setScaleY(0.4f);
-                }else if(a>=3){
-//                    setPivotX(getWidth()/2);
-//                    setPivotY(getHeight()/2);
-                    setScaleX(3f);
-                    setScaleY(3f);
-                }
-                if(b>0.2&&b<3){
-//                    setScaleY(b);
+                    setScaleX(0.39f);
+                    setScaleY(0.39f);
+                }else if(a>=5){
+                    setScaleX(5f);
+                    setScaleY(5f);
                 }
             }
             Log.e("daoyi_10",""+mWidthEnd);
