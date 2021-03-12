@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_shape"
+    android:padding="10dp"
+    android:layout_gravity="center">
+    <ImageView
+        android:id="@+id/start"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/star"
+        android:layout_centerVertical="true"
+        />
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="64dp"
+        android:layout_height="46dp"
+        android:src="@drawable/folder"
+        android:tint="@color/green"
+        android:layout_toRightOf="@id/start"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxWidth="150dp"
+        android:maxLength="20"
+        android:singleLine="true"
+        android:text="Cad设计图纸dadadadadadadaddadadasddda"
+        android:textColor="#040404"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_toRightOf="@id/icon"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="14dp"
+        />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="2020-3-19 14:28"
+        android:textColor="#797676"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/icon"
+        android:layout_marginRight="14dp"
+        />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/chevron_right"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout>

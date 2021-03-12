@@ -1,43 +1,28 @@
-package com.zhihuan.daoyi.cad;
+package com.zhihuan.daoyi.cad.ui.Activitys;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.net.UrlQuerySanitizer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.zhihuan.daoyi.cad.Dialogs.LoadDialog;
+import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.base.BaseActivity;
-import com.zhihuan.daoyi.cad.databinding.ActivityBaseBinding;
 import com.zhihuan.daoyi.cad.databinding.ActivityMainBinding;
-import com.zhihuan.daoyi.cad.databinding.BaseviewBinding;
 import com.zhihuan.daoyi.cad.help.SaveHelper;
 import com.zhihuan.daoyi.cad.interfaces.TouchEventListener;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
-import com.zhihuan.daoyi.cad.views.CropRectView;
 import com.zhihuan.daoyi.cad.views.DragBaseView;
 import com.zhihuan.daoyi.cad.views.DragFrameLayoutView;
-import com.zhihuan.daoyi.cad.views.DragImageView;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
@@ -212,14 +197,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             Date date = new Date();
             long time = date.getTime();
             String path = SaveHelper.newInstance().getCachePath() + "/" + time + ".jpg"; // 获取缓存路劲
-            dragFrameLayoutView.setDrawingCacheEnabled(true);
-            dragFrameLayoutView.buildDrawingCache();
-            Bitmap drawingCache = dragFrameLayoutView.getDrawingCache(true);
+            Bitmap bitmap= SaveHelper.newInstance().getBitmapView(dragFrameLayoutView);
             loadDialog = new LoadDialog(MainActivity.this);
             loadDialog.show();
-            int i = SaveHelper.newInstance().SaveBitmap(drawingCache, path);
+            int i = SaveHelper.newInstance().SaveBitmap(bitmap, path);
             handler.postDelayed(close,2000);
-
 //            drawingCache.recycle();
             dragFrameLayoutView.destroyDrawingCache();
             dragFrameLayoutView.setDrawingCacheEnabled(false);
