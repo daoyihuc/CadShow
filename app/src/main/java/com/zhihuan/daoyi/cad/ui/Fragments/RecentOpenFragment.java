@@ -46,9 +46,6 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
     private EmptyView emptyView;
 
 
-
-
-
     @Override
     protected RecentOpenFragmentBinding getViewBinding() {
         return RecentOpenFragmentBinding.inflate(LayoutInflater.from(getActivity()),baseBinding.getRoot(),true);

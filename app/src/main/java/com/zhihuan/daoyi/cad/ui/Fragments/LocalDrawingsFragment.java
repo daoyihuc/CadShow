@@ -40,7 +40,7 @@ public class LocalDrawingsFragment extends BaseFragment<LocalDrawingsFragmentBin
         list=new ArrayList<>();
         list.add( new RecentOpenFragment());
         list.add( new RecentOpenFragment());
-        list.add( new RecentOpenFragment());
+        list.add( new AllFileFragment());
 
     }
 
