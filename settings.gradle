@@ -1,2 +1,3 @@
+include ':Recharge'
 include ':app'
 rootProject.name = "Cad"
