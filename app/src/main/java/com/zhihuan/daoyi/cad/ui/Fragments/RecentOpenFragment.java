@@ -92,7 +92,7 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
 
             @Override
             public void onError(Throwable e) {
-
+//
             }
 
             @Override
