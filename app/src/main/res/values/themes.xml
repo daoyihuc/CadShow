@@ -30,4 +30,9 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+    <!--tabs 样式-->
+    <style name="localTabs" parent="Widget.Design.TabLayout">
+
+    </style>
 </resources>

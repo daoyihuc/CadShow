@@ -1,19 +1,24 @@
 package com.zhihuan.daoyi.cad.base;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-import androidx.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewbinding.ViewBinding;
 
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.databinding.ActivityBaseBinding;
+import com.zhihuan.daoyi.cad.databinding.BaseFragmentBinding;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
 
 import io.reactivex.Observable;
@@ -25,36 +30,43 @@ import io.reactivex.functions.Consumer;
  * @params: “details”
  * @date :
  */
-public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
-    protected ActivityBaseBinding baseBinding;
+public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
+
+    protected BaseFragmentBinding baseBinding;
     public T viewBinding;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        baseBinding = ActivityBaseBinding.inflate(getLayoutInflater());
-        setContentView(baseBinding.getRoot());
-        viewBinding = getViewBinding();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        baseBinding=BaseFragmentBinding.inflate(inflater,container,false);
+        viewBinding=getViewBinding();
+        initData();
+        init();
+        return baseBinding.getRoot();
     }
 
     protected abstract T getViewBinding();
+    protected  abstract void initData();
+    protected  abstract void init();
 
     // 初始化头部
     public void initTitle(CharSequence title) {
-        baseBinding.title.init();
-        baseBinding.title.setCenterTitle("");
-        baseBinding.title.setCenterColor(0xff000000);
-        baseBinding.title.setCenterFontSize(18);
-        baseBinding.title.setBackGroundColor(0xffffffff);
-        baseBinding.title.setLeftDrawable(R.drawable.ic_baseline_arrow_back_ios_24,0xff000000);
-        baseBinding.title.setRightTitle("");
-        baseBinding.title.setRightFontSize(18);
-        baseBinding.title.setRightColor(0xff000000);
-        baseBinding.title.setLeftMargin(MacUtils.dpto(10),0,0,0);
-        baseBinding.title.setRightMargin(0,0,MacUtils.dpto(10),0);
-        baseBinding.title.addviews();
-        baseBinding.title.setVisibility(View.VISIBLE);
+        baseBinding.titleBar.init();
+        baseBinding.titleBar.setCenterTitle("");
+        baseBinding.titleBar.setCenterColor(0xff000000);
+        baseBinding.titleBar.setCenterFontSize(18);
+        baseBinding.titleBar.setBackGroundColor(0xffffffff);
+        baseBinding.titleBar.setLeftDrawable(R.drawable.ic_baseline_arrow_back_ios_24,0xff000000);
+        baseBinding.titleBar.setRightTitle("");
+        baseBinding.titleBar.setRightFontSize(18);
+        baseBinding.titleBar.setRightColor(0xff000000);
+        baseBinding.titleBar.setLeftMargin(MacUtils.dpto(10),0,0,0);
+        baseBinding.titleBar.setRightMargin(0,0,MacUtils.dpto(10),0);
+        baseBinding.titleBar.addviews();
+        baseBinding.titleBar.setVisibility(View.VISIBLE);
     }
+
     // 权限获取
     @SuppressLint("CheckResult")
     protected  void getPermissions(String[] permission){
@@ -80,7 +92,5 @@ public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActiv
             }
         });
     }
-
-
 
 }

@@ -15,7 +15,7 @@
 
         android:process=":secondProcess"
         android:theme="@style/Theme.Cad">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.Activitys.firstActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

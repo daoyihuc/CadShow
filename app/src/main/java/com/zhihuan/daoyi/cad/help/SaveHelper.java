@@ -2,6 +2,7 @@ package com.zhihuan.daoyi.cad.help;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,15 @@ public class SaveHelper {
     public  String getCachePath(){
         String CachFileName=Environment.getExternalStorageDirectory().getAbsolutePath()+"/CadShow";
         return CachFileName;
+    }
+
+    public Bitmap getBitmapView(DragFrameLayoutView view){
+        Bitmap bitmap = null;
+        bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
+                Bitmap.Config.RGB_565);
+        final Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
     }
 
     public  int SaveBitmap(Bitmap drawingCache, String FileName){

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rootBox"
-    tools:context=".MainActivity"
+    tools:context=".ui.Activitys.MainActivity"
     android:orientation="vertical"
     android:background="@color/black"
     >
@@ -21,9 +21,11 @@
 
         <com.zhihuan.daoyi.cad.views.DragFrameLayoutView
             android:id="@+id/maxBox"
-            android:layout_width="500dp"
-            android:layout_height="500dp"
+            android:layout_width="2000dp"
+            android:layout_height="2000dp"
             android:layout_gravity="center"
+            android:scaleX="0.4"
+            android:scaleY="0.4"
             >
 
             <ImageView
