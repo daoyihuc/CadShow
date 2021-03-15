@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/box"
     android:background="@drawable/item_shape"
     android:padding="10dp"
     android:layout_gravity="center">
@@ -19,7 +20,6 @@
         android:layout_width="64dp"
         android:layout_height="46dp"
         android:src="@drawable/folder"
-        android:tint="@color/green"
         android:layout_toRightOf="@id/start"
         android:layout_centerVertical="true"
         android:layout_marginTop="10dp"
@@ -55,7 +55,7 @@
         />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/item_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/chevron_right"

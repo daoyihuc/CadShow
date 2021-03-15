@@ -1,6 +1,5 @@
 package com.zhihuan.daoyi.cad.ui.Fragments;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -16,10 +15,11 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.base.BaseFragment;
 import com.zhihuan.daoyi.cad.databinding.AllFragmentBinding;
+import com.zhihuan.daoyi.cad.databinding.FavoritesFragmentBinding;
 import com.zhihuan.daoyi.cad.databinding.RecentOpenFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RoomHelper;
 import com.zhihuan.daoyi.cad.ui.adpterBean.CacheBean;
-import com.zhihuan.daoyi.cad.ui.adpters.AllOpenAdpter;
+import com.zhihuan.daoyi.cad.ui.adpters.FavoritesOpenAdpter;
 import com.zhihuan.daoyi.cad.ui.adpters.RecentOpenAdpter;
 import com.zhihuan.daoyi.cad.ui.room.entity.BaseF;
 import com.zhihuan.daoyi.cad.ui.room.entity.FileBeans;
@@ -27,39 +27,66 @@ import com.zhihuan.daoyi.cad.ui.room.types.DATABASES;
 import com.zhihuan.daoyi.cad.views.EmptyView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import rx.Observable;
 import rx.Subscriber;
 
 /**
- * @author: "daoyi"
- * @date:
- * @params: "全部"
+ * @author: daoyi(yanwen)
+ * @Emaill: 1966287146
+ * @params: “收藏”
+ * @date :
  */
-public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
+public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
 
-    private AllOpenAdpter adpter; // 最近查看
+    private FavoritesOpenAdpter adpter; // 最近查看
     private EmptyView emptyView;
     private List<FileBeans> AllList;
 
 
     @Override
-    protected AllFragmentBinding getViewBinding() {
-        return AllFragmentBinding.inflate(LayoutInflater.from(getActivity()),baseBinding.getRoot(),true);
+    protected FavoritesFragmentBinding getViewBinding() {
+        return FavoritesFragmentBinding.inflate(LayoutInflater.from(getActivity()),baseBinding.getRoot(),true);
     }
 
     @Override
     protected void initData() {
-        db= RoomHelper.newInstance().db();
-        listFile= new CopyOnWriteArrayList<>();
+        listFile=new ArrayList<>();
         linkedList=new LinkedList<CacheBean>();
         AllList=new ArrayList<>();
+        db= RoomHelper.newInstance().db();
+        initFile();
         queryF();
-        getFileList(Environment.getExternalStorageDirectory().getAbsolutePath()+"/");
+    }
+
+    @Override
+    protected void init() {
+        handlers=new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                isF();
+                adpter.notifyDataSetChanged();
+                setLabel();
+                Log.e("daoyiFile",listFile.toString());
+            }
+        };
+
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        viewBinding.recy.setLayoutManager(linearLayoutManager);
+        adpter=new FavoritesOpenAdpter(getActivity(),listFile);
+        viewBinding.recy.setAdapter(adpter);
+        // 设置空布局
+        emptyView=new EmptyView(getActivity());
+        emptyView.setLayoutParams(new ViewGroup.LayoutParams(-1,-1));
+        adpter.setEmptyView(emptyView);
+        emptyView.setText(getResources().getString(R.string.recent_empty));
+
+        adpter.setOnItemChildClickListener(childClickListener);
+
+        viewBinding.back.setOnClickListener(back);
     }
     // 文件查询
     private void queryF(){
@@ -86,44 +113,6 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
             }
         },baseFObservable);
     }
-
-    public final Observer<List<FileBeans>> observableAll=new Observer<List<FileBeans>>() {
-        @Override
-        public void onChanged(List<FileBeans> fileBeans) {
-            Log.e("daoyi_live",fileBeans.size()+"");
-            Log.e("daoyi_live",fileBeans.toString()+"");
-            AllList.addAll(fileBeans);
-        }
-    };
-
-
-
-    @Override
-    protected void init() {
-        handlers=new Handler(){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                adpter.notifyDataSetChanged();
-                isF();
-                setLabel();
-            }
-        };
-
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        viewBinding.recy.setLayoutManager(linearLayoutManager);
-        adpter=new AllOpenAdpter(getActivity(),listFile);
-        viewBinding.recy.setAdapter(adpter);
-        // 设置空布局
-        emptyView=new EmptyView(getActivity());
-        emptyView.setLayoutParams(new ViewGroup.LayoutParams(-1,-1));
-        adpter.setEmptyView(emptyView);
-        emptyView.setText(getResources().getString(R.string.recent_empty));
-        adpter.setOnItemChildClickListener(childClickListener);
-
-        viewBinding.back.setOnClickListener(back);
-    }
-
     private void setLabel(){
         StringBuilder stringBuilder=new StringBuilder();
         for (CacheBean cacheBean : linkedList) {
@@ -132,6 +121,19 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
         viewBinding.label2.setText("");
         viewBinding.label2.setText(stringBuilder);
     }
+
+
+    public final Observer<List<FileBeans>> observableAll=new Observer<List<FileBeans>>() {
+        @Override
+        public void onChanged(List<FileBeans> fileBeans) {
+            Log.e("daoyi_live",fileBeans.size()+"");
+            Log.e("daoyi_live",fileBeans.toString()+"");
+            listFile.addAll(fileBeans);
+            AllList.addAll(fileBeans);
+            isF();
+        }
+    };
+
 
     //
     BaseQuickAdapter.OnItemChildClickListener childClickListener=new BaseQuickAdapter.OnItemChildClickListener() {
@@ -144,6 +146,7 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
                 case R.id.box:
                     if(null!=listFile&&listFile.size()>0){
                         String path=listFile.get(position).path;
+
                         getFileList(path);
                     }
                     break;
@@ -160,29 +163,25 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
                 }
                 String path=linkedList.get(linkedList.size()-1).getPath();
                 if(linkedList.size()==1){
-                    linkedList.removeLast();
+                   queryF();
+                   listFile.clear();
+                   linkedList.clear();
+
+                }else if(linkedList.size()>1){
+                    getFileList(path);
                 }
-                getFileList(path);
+
             }
         }
     };
-
     // 判断是否是收藏
     private void isF(){
 
-//        if(null==AllList){
-//            return;
-//        }
-//        if(null==listFile){
-//            return;
-//        }
         for (int i = 0; i < listFile.size(); i++) {
             for (int i1 = 0; i1 < AllList.size(); i1++) {
-                if(listFile.get(i).name.equals(AllList.get(i1).name)){
-                    Log.e("daoyis",listFile.get(i).name+":__"+AllList.get(i1).name+"::__"+listFile.get(i).name.equals(AllList.get(i1).name));
+                if(listFile.get(i).path.equals(AllList.get(i1).path)){
                     listFile.get(i).isFavorites=1;
                 }else{
-                    Log.e("daoyis",listFile.get(i).name+":__"+AllList.get(i1).name+"::__"+listFile.get(i).name.equals(AllList.get(i1).name));
                 }
             }
         }

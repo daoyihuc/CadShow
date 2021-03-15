@@ -29,4 +29,14 @@ public interface FileDao {
 
     @Query("select * from FileBeans") // 查询所有数据
     LiveData<List<FileBeans>> queryAll();
+
+    @Query("select * from FileBeans where isFavorites= :favor") // 查询收藏数据
+    LiveData<List<FileBeans>> queryF(int favor);
+
+    @Query("select count(*) from FileBeans where path= :path ") // 查询当前名字是否有收藏
+    int queryFN(String path);
+
+    @Query("select * from FileBeans where isRecent= :Recent") // 查询收藏数据
+    LiveData<List<FileBeans>> queryR(int Recent);
+
 }

@@ -1,5 +1,6 @@
 package com.zhihuan.daoyi.cad.ui.Activitys;
 
+import android.Manifest;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -43,6 +44,13 @@ public class firstActivity  extends BaseActivity<ActivityFirstBinding> {
     private int[] selectIcon = {R.drawable.a_description,
             R.drawable.a_wb_cloudy,
             R.drawable.a_person,};
+    private String[] permission;
+    {
+        permission=new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +114,7 @@ public class firstActivity  extends BaseActivity<ActivityFirstBinding> {
                     }
                 })
                 .build();
+        getPermissions(permission);
     }
 
 

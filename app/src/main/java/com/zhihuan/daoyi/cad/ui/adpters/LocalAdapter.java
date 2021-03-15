@@ -6,6 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.zhihuan.daoyi.cad.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +20,13 @@ import java.util.List;
 public class LocalAdapter extends FragmentStatePagerAdapter {
 
     List<Fragment> list=new ArrayList<>();
-
-    public LocalAdapter(@NonNull FragmentManager fm,List<Fragment> li) {
+    String[] stringArray;
+    public LocalAdapter(@NonNull FragmentManager fm,List<Fragment> li,String[] titles) {
         super(fm);
 
         if(list!=null&&list.size()<=0){
             list.addAll(li);
+            this.stringArray = titles;
         }
     }
 
@@ -36,5 +39,10 @@ public class LocalAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return list.size();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return stringArray[position];
     }
 }

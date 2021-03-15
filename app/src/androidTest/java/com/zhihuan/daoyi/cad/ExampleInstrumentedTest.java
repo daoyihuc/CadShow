@@ -8,6 +8,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.LinkedList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -22,5 +24,7 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.zhihuan.daoyi.cad", appContext.getPackageName());
+
+
     }
 }

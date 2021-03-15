@@ -13,6 +13,7 @@ public class FileBean {
     private int type; // 文件夹or文件
     private String path; // 路劲
     private int p_type;// 图片类型
+    private int isRecent;// 是否最近打开
 
     public String getName() {
         return name;
@@ -61,4 +62,6 @@ public class FileBean {
     public void setP_type(int p_type) {
         this.p_type = p_type;
     }
+
+
 }

@@ -16,6 +16,7 @@ import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
+import com.zhihuan.daoyi.cad.utils.SPUtils;
 
 import java.io.File;
 
@@ -63,6 +64,7 @@ public class CadApplication extends Application {
         this.aContext=this;
         MacUtils.init(this);
 
+
     }
     public static Context aContext(){
         return aContext;
@@ -72,6 +74,8 @@ public class CadApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
     }
+
+
 
 
 }

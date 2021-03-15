@@ -15,6 +15,7 @@ import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.base.BaseFragment;
 import com.zhihuan.daoyi.cad.databinding.RecentOpenFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RoomHelper;
+import com.zhihuan.daoyi.cad.ui.adpterBean.CacheBean;
 import com.zhihuan.daoyi.cad.ui.adpterBean.FileBean;
 import com.zhihuan.daoyi.cad.ui.adpters.RecentOpenAdpter;
 import com.zhihuan.daoyi.cad.ui.room.AppDatabase;
@@ -24,6 +25,7 @@ import com.zhihuan.daoyi.cad.ui.room.types.DATABASES;
 import com.zhihuan.daoyi.cad.views.EmptyView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import rx.Observable;
@@ -45,7 +47,6 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
     private RecentOpenAdpter adpter; // 最近查看
     private EmptyView emptyView;
 
-
     @Override
     protected RecentOpenFragmentBinding getViewBinding() {
         return RecentOpenFragmentBinding.inflate(LayoutInflater.from(getActivity()),baseBinding.getRoot(),true);
@@ -53,6 +54,16 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
 
     @Override
     protected void init() {
+        handlers=new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                if(adpter!=null){
+                    adpter.notifyDataSetChanged();
+                }
+
+            }
+        };
+
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         viewBinding.recy.setLayoutManager(linearLayoutManager);
@@ -68,19 +79,15 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
     @Override
     protected void initData() {
         listFile=new ArrayList<>();
+        linkedList=new LinkedList<CacheBean>();
         db=RoomHelper.newInstance().db();
 
 
         FileBeans fileBeans=new FileBeans();
-        fileBeans.name="daoyi";
-        fileBeans.isFavorites=1;
-        fileBeans.time="2021-3-18";
-        fileBeans.p_type=0;
-        fileBeans.path="http://www.daoyiksw.cn";
-        fileBeans.type=0;
+        fileBeans.isRecent=1;
         List<FileBeans> a=new ArrayList<>();
         a.add(fileBeans);
-        Observable<BaseF> baseFObservable = StartObservable(a, DATABASES.QUERY);
+        Observable<BaseF> baseFObservable = StartObservable(a, DATABASES.QUERYR);
         toSubscribe(new Subscriber() {
             @Override
             public void onCompleted() {
@@ -99,7 +106,6 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
         },baseFObservable);
 
     }
-
 
 }
 

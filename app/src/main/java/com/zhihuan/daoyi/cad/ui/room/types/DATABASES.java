@@ -10,8 +10,11 @@ public enum DATABASES {
 
     INSERT(0,"添加"),
     DELETE(1,"删除"),
-    UPDATE(2,"添加"),
-    QUERY(3,"添加");
+    UPDATE(2,"更新"),
+    QUERY(3,"查询"),
+    QUERYF(4,"收藏"),
+    QUERYR(5,"最近打开"),
+    QUERYFN(6,"当前名字是否被收藏");
 
     private int type;
     private String name;

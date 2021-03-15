@@ -39,7 +39,7 @@ public class LocalDrawingsFragment extends BaseFragment<LocalDrawingsFragmentBin
         stringArray= getResources().getStringArray(R.array.tabs);
         list=new ArrayList<>();
         list.add( new RecentOpenFragment());
-        list.add( new RecentOpenFragment());
+        list.add( new FavoritesFragment());
         list.add( new AllFileFragment());
 
     }
@@ -49,9 +49,9 @@ public class LocalDrawingsFragment extends BaseFragment<LocalDrawingsFragmentBin
 
         addTabs();
         // 绑定TabLayout 与 ViewPager 关联
-        localAdapter=new LocalAdapter(getChildFragmentManager(),list);
+        localAdapter=new LocalAdapter(getChildFragmentManager(),list,stringArray);
         viewBinding.viewPager.setAdapter(localAdapter);
-//        viewBinding.tab.setupWithViewPager(viewBinding.viewPager);
+        viewBinding.tab.setupWithViewPager(viewBinding.viewPager);
 
     }
     // tabs 添加
