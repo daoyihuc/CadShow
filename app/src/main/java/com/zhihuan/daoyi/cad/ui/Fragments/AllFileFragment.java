@@ -44,7 +44,6 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
 
     private AllOpenAdpter adpter; // 最近查看
     private EmptyView emptyView;
-    private List<FileBeans> AllList;
 
 
     @Override
@@ -59,7 +58,7 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
         linkedList=new LinkedList<CacheBean>();
         AllList=new ArrayList<>();
         queryF();
-        getFileList(Environment.getExternalStorageDirectory().getAbsolutePath()+"/");
+
     }
     // 文件查询
     private void queryF(){
@@ -93,6 +92,7 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
             Log.e("daoyi_live",fileBeans.size()+"");
             Log.e("daoyi_live",fileBeans.toString()+"");
             AllList.addAll(fileBeans);
+            getFileList(Environment.getExternalStorageDirectory().getAbsolutePath()+"/");
         }
     };
 

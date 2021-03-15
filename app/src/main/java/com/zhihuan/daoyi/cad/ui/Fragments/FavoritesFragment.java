@@ -43,7 +43,7 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
 
     private FavoritesOpenAdpter adpter; // 最近查看
     private EmptyView emptyView;
-    private List<FileBeans> AllList;
+//    private List<FileBeans> AllList;
 
 
     @Override
@@ -158,17 +158,19 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
         @Override
         public void onClick(View v) {
             if(null!=linkedList&&linkedList.size()>0){
-                if(linkedList.size()>1){
-                    linkedList.removeLast();
-                }
-                String path=linkedList.get(linkedList.size()-1).getPath();
+
+
                 if(linkedList.size()==1){
                    queryF();
                    listFile.clear();
                    linkedList.clear();
+                   handlers.sendEmptyMessage(0x11);
 
                 }else if(linkedList.size()>1){
+                    linkedList.removeLast();
+                    String path=linkedList.get(linkedList.size()-1).getPath();
                     getFileList(path);
+
                 }
 
             }

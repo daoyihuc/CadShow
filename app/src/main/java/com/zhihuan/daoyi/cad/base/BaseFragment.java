@@ -61,7 +61,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
 
     protected BaseFragmentBinding baseBinding;
     public T viewBinding;
-
+    protected List<FileBeans> AllList;
     public AppDatabase db;
     public List<FileBeans> listFile; // 文件存储
     public LiveData<List<FileBeans>> listLiveData;
@@ -265,7 +265,13 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
                     fileBeans.time = DateTimeUtil.DateToString(new Date(file1.lastModified()), "yyyy-MM-dd");
                     fileBeans.path = file1.getAbsolutePath();
                     fileBeans.isFavorites = 0;
+                        for (int i1 = 0; i1 < AllList.size(); i1++) {
+                            if(file1.getAbsolutePath().equals(AllList.get(i1).path)){
+                                fileBeans.isFavorites = 1;
+                            }else{
 
+                            }
+                        }
                     if (file1.isDirectory()) {
                         fileBeans.type = 0;
                     } else {
