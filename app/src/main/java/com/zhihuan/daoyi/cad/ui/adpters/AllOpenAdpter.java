@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.zhihuan.daoyi.cad.R;
@@ -41,12 +42,12 @@ public class AllOpenAdpter extends BaseQuickAdapter<FileBeans, BaseViewHolder> {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void convert(BaseViewHolder helper, FileBeans item) {
-        if(item.isFavorites==1){
-            Drawable drawable1 = mContext.getResources().getDrawable(R.drawable.star);
-            drawable1.setBounds(0,0,drawable1.getMinimumWidth(),drawable1.getMinimumHeight());
-            drawable1.setTint(mContext.getResources().getColor(R.color.yellow));
+        if(item.getIsFavorites()==1){
             ImageView imageView=helper.getView(R.id.start);
-            imageView.setImageDrawable(drawable1);
+            Glide.with(mContext).load(R.drawable.star_a).into(imageView);
+        }else if(item.getIsFavorites()==0){
+            ImageView imageView=helper.getView(R.id.start);
+            Glide.with(mContext).load(R.drawable.star).into(imageView);
         }
         helper.setText(R.id.name,item.name); // 文件名
         helper.setText(R.id.time,item.time); // 时间

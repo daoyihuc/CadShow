@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.zhihuan.daoyi.cad.ui.adpterBean.FileBean;
 import com.zhihuan.daoyi.cad.ui.room.entity.FileBeans;
 
 import java.util.List;
@@ -24,8 +25,9 @@ public interface FileDao {
 
     @Delete
     void delete(FileBeans fileBeans);
-    @Update
-    void update(FileBeans fileBeans);
+
+    @Query("UPDATE FileBeans SET isFavorites= :f  WHERE path = :path")
+    void update(int f,String path);
 
     @Query("select * from FileBeans") // 查询所有数据
     LiveData<List<FileBeans>> queryAll();
@@ -33,7 +35,7 @@ public interface FileDao {
     @Query("select * from FileBeans where isFavorites= :favor") // 查询收藏数据
     LiveData<List<FileBeans>> queryF(int favor);
 
-    @Query("select count(*) from FileBeans where path= :path ") // 查询当前名字是否有收藏
+    @Query("select count(*) from FileBeans where path= :path ") // 查询当前路劲是否有收藏
     int queryFN(String path);
 
     @Query("select * from FileBeans where isRecent= :Recent") // 查询收藏数据

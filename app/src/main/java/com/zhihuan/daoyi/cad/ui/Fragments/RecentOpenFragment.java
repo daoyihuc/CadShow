@@ -87,7 +87,7 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
         fileBeans.isRecent=1;
         List<FileBeans> a=new ArrayList<>();
         a.add(fileBeans);
-        Observable<BaseF> baseFObservable = StartObservable(a, DATABASES.QUERYR);
+        Observable<Object> baseFObservable = StartObservable(a, DATABASES.QUERYR);
         toSubscribe(new Subscriber() {
             @Override
             public void onCompleted() {

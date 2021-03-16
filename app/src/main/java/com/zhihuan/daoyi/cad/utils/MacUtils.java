@@ -25,11 +25,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+
+import com.bumptech.glide.Glide;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -253,12 +256,12 @@ public class MacUtils {
 //            decorView.setFitsSystemWindows(true);
 //            decorView.setClipToPadding(true);
             //在一个界面在来回切换顶部状态栏的时候导致透明度的状态栏不能显示 需remove掉
-            while (decorView.getChildCount() >= 2) {
+            while (decorView.getChildCount() > 2) {
                 decorView.removeViewAt(1);
             }
             decorView.addView(statusView);
             // 设置根布局的参数
-//            setRootView(activity);
+            setRootView(activity);
         }
     }
 
@@ -338,8 +341,8 @@ public class MacUtils {
     //状态栏清除
     public static void clearStatus(Activity activity){
         ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-//            decorView.setFitsSystemWindows(true);
-//            decorView.setClipToPadding(true);
+//            decorView.setFitsSystemWindows(false);
+//            decorView.setClipToPadding(false);
         //在一个界面在来回切换顶部状态栏的时候导致透明度的状态栏不能显示 需remove掉
         while (decorView.getChildCount() >= 2) {
             decorView.removeViewAt(1);
@@ -385,13 +388,18 @@ public class MacUtils {
         // 绘制一个和状态栏一样高的矩形
         // 获得状态栏高度
         // 绘制一个和状态栏一样高的矩形
-        View statusView = new View(activity);
+        View statusView;
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 getStatusBarHeight(activity));
-        statusView.setLayoutParams(params);
+
         if (isDrawable) {
+            statusView=new ImageView(activity);
+            statusView.setLayoutParams(params);
             statusView.setBackground(drawable);
+//            Glide.with(activity).load(drawable).into((ImageView) statusView);
         } else {
+            statusView = new View(activity);
+            statusView.setLayoutParams(params);
             statusView.setBackgroundColor(color);
         }
 //        statusView.setId(R.id.FAKE_STATUS_BAR_VIEW_ID);
@@ -409,6 +417,17 @@ public class MacUtils {
             if (childView instanceof ViewGroup) {
                 childView.setFitsSystemWindows(true);
                 ((ViewGroup) childView).setClipToPadding(true);
+            }
+        }
+    }
+
+    public  static void ClearRootView(Activity activity) {
+        ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
+        for (int i = 0, count = parent.getChildCount(); i < count; i++) {
+            View childView = parent.getChildAt(i);
+            if (childView instanceof ViewGroup) {
+                childView.setFitsSystemWindows(false);
+                ((ViewGroup) childView).setClipToPadding(false);
             }
         }
     }

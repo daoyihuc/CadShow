@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -66,8 +67,13 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
         handlers=new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
-                isF();
-                adpter.notifyDataSetChanged();
+                for (FileBeans fileBeans : listFile) {
+                    if(fileBeans.getIsFavorites()==1){
+                        Log.e("daoyiFavor",fileBeans.toString());
+                    }
+                }
+//                isF();
+//                adpter.notifyDataSetChanged();
                 setLabel();
                 Log.e("daoyiFile",listFile.toString());
             }
@@ -89,13 +95,15 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
         viewBinding.back.setOnClickListener(back);
     }
     // 文件查询
-    private void queryF(){
-
+    public void queryF(){
+        if(null!=linkedList&&linkedList.size()>0){
+            return;
+        }
         FileBeans fileBeans=new FileBeans();
         fileBeans.isFavorites=1;
         List<FileBeans> a=new ArrayList<>();
         a.add(fileBeans);
-        Observable<BaseF> baseFObservable = StartObservable(a, DATABASES.QUERYF);
+        Observable<Object> baseFObservable = StartObservable(a, DATABASES.QUERYF);
         toSubscribe(new Subscriber() {
             @Override
             public void onCompleted() {
@@ -113,6 +121,91 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
             }
         },baseFObservable);
     }
+
+    // 是否存在
+    private void queryFN(FileBeans fileBeans){
+
+        List<FileBeans> a=new ArrayList<>();
+        a.add(fileBeans);
+        Observable<Object> baseFObservable = StartObservable(a, DATABASES.QUERYFN);
+        toSubscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+//
+            }
+
+            @Override
+            public void onNext(Object o) {
+                Log.e("当前数量",""+((int)o));
+                if(((int)o)>0){
+                    UpdateFN(fileBeans);
+                }else{
+                    InsertFN(fileBeans);
+                }
+
+            }
+        },baseFObservable);
+    }
+
+    // 更新
+    private void UpdateFN(FileBeans fileBeans){
+
+        List<FileBeans> a=new ArrayList<>();
+        a.add(fileBeans);
+        Observable<Object> baseFObservable = StartObservable(a, DATABASES.UPDATE);
+        toSubscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+//
+            }
+
+            @Override
+            public void onNext(Object o) {
+                if(((BaseF)o).getCode()==200){
+                    queryF();
+                }
+            }
+        },baseFObservable);
+    }
+
+
+    // 是否存在
+    private void InsertFN(FileBeans fileBeans){
+
+        List<FileBeans> a=new ArrayList<>();
+        a.add(fileBeans);
+        Observable<Object> baseFObservable = StartObservable(a, DATABASES.INSERT);
+        toSubscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+//
+            }
+
+            @Override
+            public void onNext(Object o) {
+                if(((BaseF)o).getCode()==200){
+                    queryF();
+                }
+            }
+        },baseFObservable);
+    }
+
+
     private void setLabel(){
         StringBuilder stringBuilder=new StringBuilder();
         for (CacheBean cacheBean : linkedList) {
@@ -128,9 +221,12 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
         public void onChanged(List<FileBeans> fileBeans) {
             Log.e("daoyi_live",fileBeans.size()+"");
             Log.e("daoyi_live",fileBeans.toString()+"");
+            listFile.clear();
             listFile.addAll(fileBeans);
+            AllList.clear();
             AllList.addAll(fileBeans);
-            isF();
+            adpter.notifyDataSetChanged();
+//            listFile.clear();
         }
     };
 
@@ -141,13 +237,28 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
         public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
             switch (view.getId()){
                 case R.id.start:
+                    if(null!=listFile&&listFile.size()>0){
+                        FileBeans fileBeans = listFile.get(position);
+                        if(fileBeans.getIsFavorites()==0){
+                            listFile.get(position).setIsFavorites(1);
+                            fileBeans.setIsFavorites(1);
+                        }else{
+                            listFile.get(position).setIsFavorites(0);
+                            fileBeans.setIsFavorites(0);
+                        }
+                        adpter.notifyDataSetChanged();
+                        queryFN(fileBeans);
 
+                    }
                     break;
                 case R.id.box:
                     if(null!=listFile&&listFile.size()>0){
                         String path=listFile.get(position).path;
-
                         getFileList(path);
+                        for (FileBeans fileBeans : listFile) {
+                            Log.e("daoyiFavor",fileBeans.toString());
+                        }
+                        adpter.notifyDataSetChanged();
                     }
                     break;
             }
@@ -161,9 +272,9 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
 
 
                 if(linkedList.size()==1){
+                    listFile.clear();
+                    linkedList.clear();
                    queryF();
-                   listFile.clear();
-                   linkedList.clear();
                    handlers.sendEmptyMessage(0x11);
 
                 }else if(linkedList.size()>1){
@@ -176,17 +287,5 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
             }
         }
     };
-    // 判断是否是收藏
-    private void isF(){
 
-        for (int i = 0; i < listFile.size(); i++) {
-            for (int i1 = 0; i1 < AllList.size(); i1++) {
-                if(listFile.get(i).path.equals(AllList.get(i1).path)){
-                    listFile.get(i).isFavorites=1;
-                }else{
-                }
-            }
-        }
-        adpter.notifyDataSetChanged();
-    }
 }

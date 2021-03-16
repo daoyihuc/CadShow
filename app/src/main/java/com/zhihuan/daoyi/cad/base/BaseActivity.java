@@ -35,14 +35,18 @@ public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActiv
         baseBinding = ActivityBaseBinding.inflate(getLayoutInflater());
         setContentView(baseBinding.getRoot());
         viewBinding = getViewBinding();
+        initData();
+        init();
     }
 
     protected abstract T getViewBinding();
+    protected  abstract void initData();
+    protected  abstract void init();
 
     // 初始化头部
     public void initTitle(CharSequence title) {
         baseBinding.title.init();
-        baseBinding.title.setCenterTitle("");
+        baseBinding.title.setCenterTitle(""+title);
         baseBinding.title.setCenterColor(0xff000000);
         baseBinding.title.setCenterFontSize(18);
         baseBinding.title.setBackGroundColor(0xffffffff);

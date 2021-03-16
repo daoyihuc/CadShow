@@ -190,8 +190,8 @@ public class Titlabar extends RelativeLayout implements View.OnClickListener{
     public void setLeftDrawable(Drawable drawable){
         if(drawable!=null){
             drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-            Left_TextView.setCompoundDrawables(drawable,null,null,null);
         }
+        Left_TextView.setCompoundDrawables(drawable,null,null,null);
 
     }
     public void setLeftDrawable(int res,int color){

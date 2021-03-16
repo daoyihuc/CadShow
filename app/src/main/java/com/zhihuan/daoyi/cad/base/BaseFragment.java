@@ -65,6 +65,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
     public AppDatabase db;
     public List<FileBeans> listFile; // 文件存储
     public LiveData<List<FileBeans>> listLiveData;
+    public LiveData<List<Integer>> listLiveDataCount;
     protected Handler handlers;
     protected LinkedList<CacheBean> linkedList;// 存储文件路径
 
@@ -99,7 +100,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
     // 初始化头部
     public void initTitle(CharSequence title) {
         baseBinding.titleBar.init();
-        baseBinding.titleBar.setCenterTitle("");
+        baseBinding.titleBar.setCenterTitle(""+title);
         baseBinding.titleBar.setCenterColor(0xff000000);
         baseBinding.titleBar.setCenterFontSize(18);
         baseBinding.titleBar.setBackGroundColor(0xffffffff);
@@ -140,35 +141,44 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
     }
 
 
-    public rx.Observable<BaseF> StartObservable(List<FileBeans> va, DATABASES type){
+    public rx.Observable<Object> StartObservable(List<FileBeans> va, DATABASES type){
         BaseF baseF = new BaseF();
-        rx.Observable<BaseF> objectObservable = rx.Observable.create(s -> {
+        rx.Observable<Object> objectObservable = rx.Observable.create(s -> {
 
             for (int i = 0; i < va.size(); i++) {
                 switch (DATABASES.stateOf(type.getType())){
                     case INSERT:
                         db.fileDao().insert(va.get(i));
+                        baseF.setCode(200);
+                        s.onNext(baseF);
                         break;
                     case QUERY:
                         listLiveData = db.fileDao().queryAll();
+                        s.onNext(baseF);
                         break;
                     case QUERYF:
                         listLiveData = db.fileDao().queryF(va.get(i).isFavorites);
+                        s.onNext(baseF);
                         break;
                     case QUERYFN:
-                        db.fileDao().queryFN(va.get(i).path);
+                        int a =db.fileDao().queryFN(va.get(i).path);
+                        s.onNext(a);
                         break;
                     case QUERYR:
                         listLiveData = db.fileDao().queryR(va.get(i).isRecent);
+                        s.onNext(baseF);
                         break;
                     case DELETE:
                         db.fileDao().delete(va.get(i));
+                        s.onNext(baseF);
                         break;
                     case UPDATE:
-                        db.fileDao().update(va.get(i));
+                        db.fileDao().update(va.get(i).isFavorites,va.get(i).path);
+                        baseF.setCode(200);
+                        s.onNext(baseF);
                         break;
                 }
-                s.onNext(baseF);
+
             }
 
             s.onCompleted();
@@ -215,7 +225,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
             }
 
 
-            rx.Observable<BaseF> baseFObservable = StartObservable(a, DATABASES.INSERT);
+            rx.Observable<Object> baseFObservable = StartObservable(a, DATABASES.INSERT);
             toSubscribe(new Subscriber() {
                 @Override
                 public void onCompleted() {
@@ -234,9 +244,9 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
 
         }
     }
+    // 获取下级目录文件
     protected  void getFileList(String path){
         Log.e("daoyiPath_:",path);
-        SaveHelper.newInstance().FileName(getActivity());
         if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
             File file=new File(path);
             if(file.isFile()){
@@ -261,24 +271,23 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
             if(null!=files2&&files2.length>0){
                 for (File file1 : files2) {
                     FileBeans fileBeans = new FileBeans();
-                    fileBeans.name = file1.getName();
+                    fileBeans.setName(file1.getName());
                     fileBeans.time = DateTimeUtil.DateToString(new Date(file1.lastModified()), "yyyy-MM-dd");
                     fileBeans.path = file1.getAbsolutePath();
-                    fileBeans.isFavorites = 0;
-                        for (int i1 = 0; i1 < AllList.size(); i1++) {
-                            if(file1.getAbsolutePath().equals(AllList.get(i1).path)){
-                                fileBeans.isFavorites = 1;
-                            }else{
-
-                            }
+                    fileBeans.setIsFavorites(0);
+                    for (int i1 = 0; i1 < AllList.size(); i1++) {
+                        if(file1.getAbsolutePath().equals(AllList.get(i1).path)){
+//                            fileBeans.isFavorites = 1;
+                            fileBeans.setIsFavorites(1);
+                        }else{
                         }
+                    }
                     if (file1.isDirectory()) {
                         fileBeans.type = 0;
                     } else {
                         fileBeans.type = 1;
                         String fileName = file1.getName();
                         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-                        Log.e("daoyi_suffix", suffix);
                         if (suffix.equals("png")) {
                             fileBeans.p_type = 0;
                         } else if (suffix.equals("jpg")) {
@@ -296,4 +305,27 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
             }
     }
 
+
+
+    // 添加收藏
+    protected void addF(FileBeans fileBeans){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                db.fileDao().insert(fileBeans);
+            }
+        }).start();
+
+    }
+
+    // 更新收藏
+    protected void updateF(FileBeans fileBeans){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                db.fileDao().update(fileBeans.getIsFavorites(),fileBeans.getPath());
+            }
+        }).start();
+
+    }
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:text="CADSHOW"
+        android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:layout_marginTop="100dp"
+        />
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/logo"
+        android:inputType="phone"
+        android:maxLength="11"
+        android:hint="@string/lg_username"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/shape_input"
+        android:paddingLeft="20dp"
+        android:textColor="@color/black"
+        />
+    <RelativeLayout
+        android:id="@+id/passwordBox"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/username"
+        android:background="@drawable/shape_input"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        >
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:maxLength="6"
+            android:hint="@string/lg_code"
+            android:paddingLeft="20dp"
+            android:background="@drawable/shape_input"
+            android:textColor="@color/black"
+            />
+        <Button
+            android:id="@+id/codeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/lg_haCode"
+            android:stateListAnimator="@null"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shape_radiu_10"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/passwordBox"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/lg_btn"
+        android:letterSpacing="0.2"
+        android:background="@drawable/shape_radiu_10"
+        android:textColor="@color/white"
+        />
+
+</RelativeLayout>

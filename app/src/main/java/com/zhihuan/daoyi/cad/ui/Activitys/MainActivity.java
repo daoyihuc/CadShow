@@ -83,6 +83,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         return ActivityMainBinding.inflate(getLayoutInflater(), baseBinding.getRoot(), true);
     }
 
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
     // 设置选中
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setCheck(boolean select){

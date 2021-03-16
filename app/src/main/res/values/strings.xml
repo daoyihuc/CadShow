@@ -12,4 +12,28 @@
     </string-array>
 
     <string name="recent_empty">最近没有打开文件</string>
+    <string name="web_empty_no">登录查看云盘</string>
+    <string name="web_empty_yes">云盘还没上传文件哦</string>
+
+    <string name="my_title_no">当前还未登录</string>
+    <string name="my_button_go">请前往登录</string>
+    <string name="my_vip_no">您当前还不是VIP</string>
+    <string name="my_vip_btn_no">前往开通</string>
+    <string name="my_vip_btn_yes">续费</string>
+
+    <string name="lg_username">请输入您的手机号</string>
+    <string name="lg_code">请输入验证码</string>
+    <string name="lg_password">请输入密码</string>
+    <string name="lg_haCode">获取验证码</string>
+    <string name="lg_btn">登录</string>
+
+
+    <string-array name="my_list">
+        <item>新手指南</item>
+        <item>关于我们</item>
+        <item>用户协议</item>
+        <item>隐私政策</item>
+    </string-array>
+
+
 </resources>

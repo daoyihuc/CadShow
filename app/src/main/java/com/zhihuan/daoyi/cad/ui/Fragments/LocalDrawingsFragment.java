@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.zhihuan.daoyi.cad.R;
@@ -52,6 +53,32 @@ public class LocalDrawingsFragment extends BaseFragment<LocalDrawingsFragmentBin
         localAdapter=new LocalAdapter(getChildFragmentManager(),list,stringArray);
         viewBinding.viewPager.setAdapter(localAdapter);
         viewBinding.tab.setupWithViewPager(viewBinding.viewPager);
+        viewBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position){
+                    case 0:
+
+                        break;
+                    case 1:
+                        ((FavoritesFragment)list.get(1)).queryF();
+                        break;
+                    case 2:
+                        ((AllFileFragment)list.get(2)).queryF(true);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
     // tabs 添加

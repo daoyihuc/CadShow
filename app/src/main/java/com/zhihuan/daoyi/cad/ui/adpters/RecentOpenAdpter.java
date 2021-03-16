@@ -2,9 +2,11 @@ package com.zhihuan.daoyi.cad.ui.adpters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.zhihuan.daoyi.cad.R;
@@ -38,11 +40,12 @@ public class RecentOpenAdpter extends BaseQuickAdapter<FileBeans, BaseViewHolder
 
     @Override
     protected void convert(BaseViewHolder helper, FileBeans item) {
-        if(item.isFavorites==1){
-            Drawable drawable = mContext.getResources().getDrawable(R.drawable.star);
-            drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-            drawable.setTint(mContext.getResources().getColor(R.color.yellow));
-            helper.setImageDrawable(R.id.start,drawable);
+        if(item.getIsFavorites()==1){
+            ImageView imageView=helper.getView(R.id.start);
+            Glide.with(mContext).load(R.drawable.star_a).into(imageView);
+        }else if(item.getIsFavorites()==0){
+            ImageView imageView=helper.getView(R.id.start);
+            Glide.with(mContext).load(R.drawable.star).into(imageView);
         }
         helper.setText(R.id.name,item.name); // 文件名
         helper.setText(R.id.time,item.time); // 时间
@@ -56,6 +59,10 @@ public class RecentOpenAdpter extends BaseQuickAdapter<FileBeans, BaseViewHolder
             }else if(item.p_type==1){
                 drawable = mContext.getResources().getDrawable(R.drawable.jpg);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+            }else{
+                drawable = mContext.getResources().getDrawable(R.drawable.question);
+                drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                drawable.setTint(mContext.getResources().getColor(R.color.yellow));
             }
             helper.setVisible(R.id.item_back,false);
         }

@@ -3,6 +3,8 @@ package com.zhihuan.daoyi.cad.ui.Activitys;
 import android.Manifest;
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,12 +12,16 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 
+import com.jaeger.library.StatusBarUtil;
 import com.next.easynavigation.constant.Anim;
 import com.next.easynavigation.view.EasyNavigationBar;
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.base.BaseActivity;
 import com.zhihuan.daoyi.cad.databinding.ActivityFirstBinding;
+import com.zhihuan.daoyi.cad.databinding.MyFragmentBinding;
 import com.zhihuan.daoyi.cad.ui.Fragments.LocalDrawingsFragment;
+import com.zhihuan.daoyi.cad.ui.Fragments.MyFragment;
+import com.zhihuan.daoyi.cad.ui.Fragments.WebFragment;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
 
 import java.util.ArrayList;
@@ -55,20 +61,25 @@ public class firstActivity  extends BaseActivity<ActivityFirstBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MacUtils.initWindow(this,0xffffffff,false,null,true);
-        init();
+//        MacUtils.initWindow(this,0xffffffff,false,null,true);
     }
 
     @Override
     protected ActivityFirstBinding getViewBinding() {
-        return ActivityFirstBinding.inflate(getLayoutInflater(),baseBinding.getRoot(),true);
+        return ActivityFirstBinding.inflate(getLayoutInflater(),baseBinding.maxBox,true);
 
     }
 
-    private void init(){
+    @Override
+    protected void initData() {
+
+    }
+
+    protected void init(){
+        baseBinding.title.setVisibility(View.VISIBLE);
         fragments.add( new LocalDrawingsFragment());
-        fragments.add( new LocalDrawingsFragment());
-        fragments.add( new LocalDrawingsFragment());
+        fragments.add( new WebFragment());
+        fragments.add( new MyFragment());
         viewBinding.navigationBar.titleItems(tabText)//添加文字
                 .tabTextSize(10)//Tab文字大小
                 .tabTextTop(2) //Tab文字距Tab图标的距离
@@ -99,15 +110,32 @@ public class firstActivity  extends BaseActivity<ActivityFirstBinding> {
                         Log.e("MainActivity","当前界面"+position);
                         switch (position){
                             case 0:
-
+                                MacUtils.ClearRootView(firstActivity.this);
+                                MacUtils.clearStatus(firstActivity.this);
+                                baseBinding.title.setBackgroundColor(0xffffffff);
+                                MacUtils.setStatusText(firstActivity.this,true);
+//                                MacUtils.initWindow(firstActivity.this,0xffffffff,false,null,true);
+                                baseBinding.title.setVisibility(View.VISIBLE);
                                 break;
                             case 1:
-
+                                baseBinding.title.setVisibility(View.VISIBLE);
+                                MacUtils.ClearRootView(firstActivity.this);
+                                MacUtils.clearStatus(firstActivity.this);
+                                baseBinding.title.setBackgroundColor(0xffffffff);
+                                MacUtils.setStatusText(firstActivity.this,true);
+//                                MacUtils.initWindow(firstActivity.this,0xffffffff,false,null,true);
                                 break;
                             case 2:
+                                MacUtils.ClearRootView(firstActivity.this);
+                                MacUtils.clearStatus(firstActivity.this);
+                                baseBinding.title.setVisibility(View.VISIBLE);
+                                baseBinding.title.setLeftDrawable(null);
+                                baseBinding.title.setBackground(firstActivity.this.getResources().getDrawable(R.drawable.my_back_g));
+                                StatusBarUtil.setTranslucentForImageView(firstActivity.this,1,baseBinding.maxBox);
 //                                MacUtils.setTranslucentStatus(mActivity);
                                 break;
                             case 3:
+
                                 break;
                         }
                         return false;
