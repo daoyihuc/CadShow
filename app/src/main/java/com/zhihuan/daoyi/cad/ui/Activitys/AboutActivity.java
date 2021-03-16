@@ -13,7 +13,7 @@ import com.zhihuan.daoyi.cad.databinding.ActivityAboutBinding;
  * @date :
  */
 public class AboutActivity extends BaseActivity<ActivityAboutBinding> {
-
+    //
 
     public static void start(Activity activity){
         Intent intent=new Intent();
