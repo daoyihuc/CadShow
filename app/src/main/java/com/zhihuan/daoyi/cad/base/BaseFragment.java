@@ -116,17 +116,19 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
 
     // 权限获取
     @SuppressLint("CheckResult")
-    protected  void getPermissions(String[] permission){
+    protected  void getPermissions(String[] permissions){
         RxPermissions rxPermissions= new RxPermissions(this);
         rxPermissions.setLogging(true);
-        Observable<Permission> permissionObservable = rxPermissions.requestEach(permission);
+        Observable<Permission> permissionObservable = rxPermissions.requestEach(permissions);
+
         permissionObservable.subscribe(new Consumer<Permission>() {
             @Override
             public void accept(Permission permission) throws Exception {
                 if (permission.granted) {
                     // 用户已经同意该权限
                     Log.d("daoyi", "text_sms granted" );
-                    handlers.sendEmptyMessage(0x12);
+                    handlers.sendEmptyMessage(0x13);
+
                     //result.agree(permission);
                 } else if (permission.shouldShowRequestPermissionRationale) {
                     // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框

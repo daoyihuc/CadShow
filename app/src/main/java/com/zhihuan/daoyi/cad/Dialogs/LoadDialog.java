@@ -32,6 +32,7 @@ public class LoadDialog extends Dialog {
     LoadDialogBinding loadDialogBinding;
     private Context mContext;
     private String msg="图片保存中";
+    Animation hyperspaceJumpAnimation;
     public LoadDialog(@NonNull Context context) {
         super(context);
         this.mContext=context;
@@ -50,7 +51,7 @@ public class LoadDialog extends Dialog {
         setContentView(loadDialogBinding.getRoot());//加载布局
         loadDialogBinding.tvLoadingTx.setText(msg);
         // 加载动画
-        Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(
+        hyperspaceJumpAnimation = AnimationUtils.loadAnimation(
                 mContext, R.anim.loading_animation);
         // 使用ImageView显示动画
         loadDialogBinding.ivLoading.startAnimation(hyperspaceJumpAnimation);
@@ -63,6 +64,7 @@ public class LoadDialog extends Dialog {
     @Override
     public void show() {
         super.show();
+        loadDialogBinding.ivLoading.startAnimation(hyperspaceJumpAnimation);
         /**
          * 设置宽度全屏，要设置在show的后面
          */

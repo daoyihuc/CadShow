@@ -48,6 +48,7 @@ public class ShopFragment extends BaseFragment<ShopFragmentBinding> {
     private List<ShopBean> list;
     String[] stringArray; //tabs
     String downUrl="";
+    int coun=0;
     private LoadDialog loadDialog;
 
     private String[] permission;
@@ -76,8 +77,11 @@ public class ShopFragment extends BaseFragment<ShopFragmentBinding> {
         handlers=new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
-                if(msg.what==0x12){
-                    down(downUrl);
+                if(msg.what==0x13){
+                    coun++;
+                    if(coun==permission.length){
+                        down(downUrl);
+                    }
                     return;
                 }
             }
@@ -184,6 +188,7 @@ public class ShopFragment extends BaseFragment<ShopFragmentBinding> {
     private void down(String url){
         String parentpath = SaveHelper.newInstance().getCachePathSKP();
         File fileP=new File(parentpath);
+        coun=0;
         if(!fileP.exists()){
            fileP.mkdirs();
         }
