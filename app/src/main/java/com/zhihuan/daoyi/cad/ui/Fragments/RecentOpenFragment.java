@@ -105,7 +105,6 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
         linkedList=new LinkedList<CacheBean>();
         db=RoomHelper.newInstance().db();
 
-
         FileBeans fileBeans=new FileBeans();
         fileBeans.isRecent=1;
         List<FileBeans> a=new ArrayList<>();
