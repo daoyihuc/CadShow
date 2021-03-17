@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -30,6 +31,7 @@ public class LoadDialog extends Dialog {
 
     LoadDialogBinding loadDialogBinding;
     private Context mContext;
+    private String msg="图片保存中";
     public LoadDialog(@NonNull Context context) {
         super(context);
         this.mContext=context;
@@ -46,12 +48,16 @@ public class LoadDialog extends Dialog {
         setCanceledOnTouchOutside(false);//点击其他区域时   true  关闭弹窗  false  不关闭弹窗
         loadDialogBinding=LoadDialogBinding.inflate(LayoutInflater.from(mContext));
         setContentView(loadDialogBinding.getRoot());//加载布局
-        loadDialogBinding.tvLoadingTx.setText("图片保存中");
+        loadDialogBinding.tvLoadingTx.setText(msg);
         // 加载动画
         Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(
                 mContext, R.anim.loading_animation);
         // 使用ImageView显示动画
         loadDialogBinding.ivLoading.startAnimation(hyperspaceJumpAnimation);
+    }
+
+    public void setMessage(String val){
+        this.msg=val;
     }
 
     @Override

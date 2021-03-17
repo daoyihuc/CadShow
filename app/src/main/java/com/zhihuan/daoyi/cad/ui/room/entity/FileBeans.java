@@ -1,5 +1,8 @@
 package com.zhihuan.daoyi.cad.ui.room.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -11,8 +14,10 @@ import androidx.room.PrimaryKey;
  * @params: “details”
  * @date :
  */
+
+
 @Entity
-public class FileBeans extends BaseF{
+public class FileBeans extends BaseF implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
@@ -23,6 +28,7 @@ public class FileBeans extends BaseF{
     public String path; // 路劲
     public int p_type;// 图片类型 0: png 1:jpg
     public int isRecent;// 是否最近打开 1: 最近打开
+
 
     @Ignore
     public int getId() {
@@ -102,4 +108,59 @@ public class FileBeans extends BaseF{
                 ", isRecent=" + isRecent +
                 '}';
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeInt(this.isFavorites);
+        dest.writeString(this.time);
+        dest.writeInt(this.type);
+        dest.writeString(this.path);
+        dest.writeInt(this.p_type);
+        dest.writeInt(this.isRecent);
+    }
+
+    public void readFromParcel(Parcel source) {
+        this.id = source.readInt();
+        this.name = source.readString();
+        this.isFavorites = source.readInt();
+        this.time = source.readString();
+        this.type = source.readInt();
+        this.path = source.readString();
+        this.p_type = source.readInt();
+        this.isRecent = source.readInt();
+    }
+
+    public FileBeans() {
+    }
+
+    protected FileBeans(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.isFavorites = in.readInt();
+        this.time = in.readString();
+        this.type = in.readInt();
+        this.path = in.readString();
+        this.p_type = in.readInt();
+        this.isRecent = in.readInt();
+    }
+
+    public static final Creator<FileBeans> CREATOR = new Creator<FileBeans>() {
+        @Override
+        public FileBeans createFromParcel(Parcel source) {
+            return new FileBeans(source);
+        }
+
+        @Override
+        public FileBeans[] newArray(int size) {
+            return new FileBeans[size];
+        }
+    };
 }

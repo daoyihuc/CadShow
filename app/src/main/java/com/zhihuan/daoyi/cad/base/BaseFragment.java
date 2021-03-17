@@ -126,6 +126,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
                 if (permission.granted) {
                     // 用户已经同意该权限
                     Log.d("daoyi", "text_sms granted" );
+                    handlers.sendEmptyMessage(0x12);
                     //result.agree(permission);
                 } else if (permission.shouldShowRequestPermissionRationale) {
                     // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
@@ -186,7 +187,12 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
         return objectObservable;
     }
 
-
+    public void toSubscribe(Subscriber subscriber, rx.Observable observable){
+        observable.subscribeOn(Schedulers.io())//指定订阅关系发生在IO线程
+                .unsubscribeOn(Schedulers.io())//指定解绑发生在IO线程
+                .observeOn(AndroidSchedulers.mainThread())//指回调发生在主线程
+                .subscribe(subscriber);//创建订阅关系
+    }
     public final Observer<List<FileBeans>> observable=new Observer<List<FileBeans>>() {
         @Override
         public void onChanged(List<FileBeans> fileBeans) {
@@ -200,12 +206,7 @@ public abstract class BaseFragment <T extends ViewBinding> extends Fragment {
         }
     };
 
-    public void toSubscribe(Subscriber subscriber, rx.Observable observable){
-        observable.subscribeOn(Schedulers.io())//指定订阅关系发生在IO线程
-                .unsubscribeOn(Schedulers.io())//指定解绑发生在IO线程
-                .observeOn(AndroidSchedulers.mainThread())//指回调发生在主线程
-                .subscribe(subscriber);//创建订阅关系
-    }
+
     protected void initFile(){
         boolean isFirstUse = SPUtils.getIsFirstUse(getActivity());
         if(isFirstUse){

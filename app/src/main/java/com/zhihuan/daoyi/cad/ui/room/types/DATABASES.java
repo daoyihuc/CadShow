@@ -14,7 +14,8 @@ public enum DATABASES {
     QUERY(3,"查询"),
     QUERYF(4,"收藏"),
     QUERYR(5,"最近打开"),
-    QUERYFN(6,"当前名字是否被收藏");
+    QUERYFN(6,"当前名字是否被收藏"),
+    QUERYRP(7,"当前文件是都被打开过");
 
     private int type;
     private String name;

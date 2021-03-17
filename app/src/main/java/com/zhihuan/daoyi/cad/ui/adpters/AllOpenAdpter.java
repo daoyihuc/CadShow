@@ -42,6 +42,7 @@ public class AllOpenAdpter extends BaseQuickAdapter<FileBeans, BaseViewHolder> {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void convert(BaseViewHolder helper, FileBeans item) {
+        ImageView icon=helper.getView(R.id.icon);
         if(item.getIsFavorites()==1){
             ImageView imageView=helper.getView(R.id.start);
             Glide.with(mContext).load(R.drawable.star_a).into(imageView);
@@ -54,21 +55,28 @@ public class AllOpenAdpter extends BaseQuickAdapter<FileBeans, BaseViewHolder> {
         Drawable drawable=mContext.getResources().getDrawable(R.drawable.folder);
         drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
         drawable.setTint(mContext.getResources().getColor(R.color.green));
+
         if(item.type==1){
             if(item.p_type==0){ // png
                 drawable = mContext.getResources().getDrawable(R.drawable.png);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                Glide.with(mContext).load(item.getPath()).into(icon);
             }else if(item.p_type==1){
                 drawable = mContext.getResources().getDrawable(R.drawable.jpg);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                Glide.with(mContext).load(item.getPath()).into(icon);
             }else{
                 drawable = mContext.getResources().getDrawable(R.drawable.question);
                 drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
                 drawable.setTint(mContext.getResources().getColor(R.color.yellow));
+                helper.setImageDrawable(R.id.icon,drawable);
             }
             helper.setVisible(R.id.item_back,false);
+        }else if(item.type==0){
+            helper.setImageDrawable(R.id.icon,drawable);
+            helper.setVisible(R.id.item_back,true);
         }
-        helper.setImageDrawable(R.id.icon,drawable);
+
         helper.addOnClickListener(R.id.box)
                 .addOnClickListener(R.id.start);
     }

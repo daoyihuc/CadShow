@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -11,10 +12,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.base.BaseFragment;
 import com.zhihuan.daoyi.cad.databinding.RecentOpenFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RoomHelper;
+import com.zhihuan.daoyi.cad.ui.Activitys.MainActivity;
 import com.zhihuan.daoyi.cad.ui.adpterBean.CacheBean;
 import com.zhihuan.daoyi.cad.ui.adpterBean.FileBean;
 import com.zhihuan.daoyi.cad.ui.adpters.RecentOpenAdpter;
@@ -74,7 +77,27 @@ public class RecentOpenFragment extends BaseFragment<RecentOpenFragmentBinding> 
         emptyView.setLayoutParams(new ViewGroup.LayoutParams(-1,-1));
         adpter.setEmptyView(emptyView);
         emptyView.setText(getResources().getString(R.string.recent_empty));
+        adpter.setOnItemChildClickListener(onItemClickListener);
     }
+
+    BaseQuickAdapter.OnItemChildClickListener onItemClickListener=new BaseQuickAdapter.OnItemChildClickListener() {
+        @Override
+        public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+            switch (view.getId()){
+                case R.id.box:
+                    if(null!=listFile&&listFile.size()>0){
+                        FileBeans fileBeans = listFile.get(position);
+                        fileBeans.setIsRecent(1);
+                        if(fileBeans.getP_type()==1||fileBeans.getP_type()==2||
+                                fileBeans.getP_type()==10
+                        ){
+                            MainActivity.startFile(getActivity(),fileBeans);
+                        }
+                    }
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void initData() {

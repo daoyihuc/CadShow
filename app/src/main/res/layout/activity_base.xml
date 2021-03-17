@@ -19,5 +19,14 @@
         >
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <RelativeLayout
+        android:id="@+id/maxBox2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title"
+        android:visibility="gone"
+        >
+
+    </RelativeLayout>
 
 </RelativeLayout>

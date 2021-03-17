@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/shap_shop"
+    >
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ert8"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/shap_shop"
+        android:backgroundTint="#000000"
+        android:alpha="0.5"
+
+        >
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/down_skp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="下载源文件"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/down_shape"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@+id/goEdit"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="草图绘制"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/down_shape"
+        android:layout_below="@id/down_skp"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@+id/timelabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="作品发布时间："
+        android:textColor="@color/white"
+        android:layout_below="@id/goEdit"
+        android:layout_marginTop="80dp"
+        android:layout_toLeftOf="@id/time"
+        />
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2019-01-03"
+        android:textColor="@color/white"
+        android:layout_below="@id/goEdit"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="20dp"
+
+        />
+
+</RelativeLayout>

@@ -19,6 +19,7 @@ import com.zhihuan.daoyi.cad.databinding.AllFragmentBinding;
 import com.zhihuan.daoyi.cad.databinding.FavoritesFragmentBinding;
 import com.zhihuan.daoyi.cad.databinding.RecentOpenFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RoomHelper;
+import com.zhihuan.daoyi.cad.ui.Activitys.MainActivity;
 import com.zhihuan.daoyi.cad.ui.adpterBean.CacheBean;
 import com.zhihuan.daoyi.cad.ui.adpters.FavoritesOpenAdpter;
 import com.zhihuan.daoyi.cad.ui.adpters.RecentOpenAdpter;
@@ -73,7 +74,7 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
                     }
                 }
 //                isF();
-//                adpter.notifyDataSetChanged();
+                adpter.notifyDataSetChanged();
                 setLabel();
                 Log.e("daoyiFile",listFile.toString());
             }
@@ -253,12 +254,23 @@ public class FavoritesFragment extends BaseFragment<FavoritesFragmentBinding> {
                     break;
                 case R.id.box:
                     if(null!=listFile&&listFile.size()>0){
-                        String path=listFile.get(position).path;
-                        getFileList(path);
-                        for (FileBeans fileBeans : listFile) {
-                            Log.e("daoyiFavor",fileBeans.toString());
+                        if(listFile.get(position).type==1){
+                            FileBeans fileBeans = listFile.get(position);
+                            fileBeans.setIsRecent(1);
+                            if(fileBeans.getP_type()==1||fileBeans.getP_type()==2||
+                                    fileBeans.getP_type()==10
+                            ){
+                                MainActivity.startFile(getActivity(),fileBeans);
+                            }
+                        }else{
+                            String path=listFile.get(position).path;
+                            getFileList(path);
+                            for (FileBeans fileBeans : listFile) {
+                                Log.e("daoyiFavor",fileBeans.toString());
+                            }
+                            adpter.notifyDataSetChanged();
                         }
-                        adpter.notifyDataSetChanged();
+
                     }
                     break;
             }

@@ -36,6 +36,14 @@
         <activity android:name=".ui.Activitys.AboutActivity"
             android:launchMode="singleInstance"
             />
+        <!--新手指南-->
+        <activity android:name=".ui.Activitys.HelpActivity"
+            android:launchMode="singleInstance"
+            />
+        <!--主功能界面-->
+        <activity android:name=".ui.Activitys.MainActivity"
+            android:launchMode="singleInstance"
+            />
     </application>
 
 </manifest>

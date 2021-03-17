@@ -13,6 +13,7 @@ import com.zhihuan.daoyi.cad.base.BaseFragment;
 import com.zhihuan.daoyi.cad.databinding.MyFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RecycleViewDivider;
 import com.zhihuan.daoyi.cad.ui.Activitys.AboutActivity;
+import com.zhihuan.daoyi.cad.ui.Activitys.HelpActivity;
 import com.zhihuan.daoyi.cad.ui.Activitys.WebViewActivity;
 import com.zhihuan.daoyi.cad.ui.adpterBean.MyBean;
 import com.zhihuan.daoyi.cad.ui.adpters.MyAdpter;
@@ -83,15 +84,16 @@ public class MyFragment extends BaseFragment<MyFragmentBinding> {
             if(null!=listData&&listData.size()>0&& listData.size()>position){
                 switch (position){
                     case 0:
+                        HelpActivity.start(getActivity());
                         break;
                     case 1:
                         AboutActivity.start(getActivity());
                         break;
                     case 2:
-                        WebViewActivity.start(getActivity(),0);
+                        WebViewActivity.start(getActivity(),0,"s");
                         break;
                     case 3:
-                        WebViewActivity.start(getActivity(),1);
+                        WebViewActivity.start(getActivity(),1,"s");
                         break;
                 }
             }

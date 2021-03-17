@@ -63,6 +63,10 @@ public class SaveHelper {
         String CachFileName=Environment.getExternalStorageDirectory().getAbsolutePath()+"/CadShow";
         return CachFileName;
     }
+    public  String getCachePathSKP(){
+        String CachFileName=Environment.getExternalStorageDirectory().getAbsolutePath()+"/CadShow/skp源文件";
+        return CachFileName;
+    }
 
     public Bitmap getBitmapView(DragFrameLayoutView view){
         Bitmap bitmap = null;

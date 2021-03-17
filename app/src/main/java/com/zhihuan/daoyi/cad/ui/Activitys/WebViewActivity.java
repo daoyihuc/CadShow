@@ -49,10 +49,11 @@ public class WebViewActivity extends BaseActivity<ActivityWebviewBinding> {
     String name = "";
     int type=0;
 
-    public static void start(Activity activity,int type){
+    public static void start(Activity activity,int type,String url){
         Intent intent=new Intent();
         intent.setClass(activity,WebViewActivity.class);
         intent.putExtra("type",type);
+        intent.putExtra("url",url);
         activity.startActivity(intent);
 
     }
@@ -74,6 +75,7 @@ public class WebViewActivity extends BaseActivity<ActivityWebviewBinding> {
     protected void initData(){
         Intent intent = getIntent();
          type = intent.getIntExtra("type",0);
+         String urlS = intent.getStringExtra("url");
          switch (type){
              case 0: // 用户协议
                  url= Constans.YHXY;
@@ -82,6 +84,10 @@ public class WebViewActivity extends BaseActivity<ActivityWebviewBinding> {
              case 1: // 隐私政策
                  url=Constans.YSZC;
                  name="隐私政策";
+                 break;
+             case 3:
+                 url= urlS;
+                 name="新手帮助";
                  break;
          }
 
@@ -95,7 +101,7 @@ public class WebViewActivity extends BaseActivity<ActivityWebviewBinding> {
         viewBinding.title.setCenterColor(0xff000000);
         viewBinding.title.setCenterFontSize(18);
         viewBinding.title.setBackGroundColor(0xffffffff);
-        viewBinding.title.setLeftDrawable(R.drawable.ic_baseline_arrow_back_ios_24,0xffdddddd);
+        viewBinding.title.setLeftDrawable(R.drawable.ic_baseline_arrow_back_ios_24,0xff4F4F4F);
         viewBinding.title.setRightTitle("");
         viewBinding.title.setRightFontSize(18);
         viewBinding.title.setRightColor(0xff000000);

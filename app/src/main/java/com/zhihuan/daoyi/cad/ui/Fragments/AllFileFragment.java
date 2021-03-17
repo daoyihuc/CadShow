@@ -20,6 +20,7 @@ import com.zhihuan.daoyi.cad.base.BaseFragment;
 import com.zhihuan.daoyi.cad.databinding.AllFragmentBinding;
 import com.zhihuan.daoyi.cad.databinding.RecentOpenFragmentBinding;
 import com.zhihuan.daoyi.cad.help.RoomHelper;
+import com.zhihuan.daoyi.cad.ui.Activitys.MainActivity;
 import com.zhihuan.daoyi.cad.ui.adpterBean.CacheBean;
 import com.zhihuan.daoyi.cad.ui.adpterBean.FileBean;
 import com.zhihuan.daoyi.cad.ui.adpters.AllOpenAdpter;
@@ -252,8 +253,20 @@ public class AllFileFragment extends BaseFragment<AllFragmentBinding> {
                     break;
                 case R.id.box:
                     if(null!=listFile&&listFile.size()>0){
-                        path=listFile.get(position).path;
-                        queryF(false);
+                        if(listFile.get(position).type==1){
+                            FileBeans fileBeans = listFile.get(position);
+                            fileBeans.setIsRecent(1);
+                            if(fileBeans.getP_type()==1||fileBeans.getP_type()==2||
+                                    fileBeans.getP_type()==10
+                            ){
+                                MainActivity.startFile(getActivity(),fileBeans);
+                            }
+
+                        }else{
+                            path=listFile.get(position).path;
+                            queryF(false);
+                        }
+
                     }
                     break;
             }

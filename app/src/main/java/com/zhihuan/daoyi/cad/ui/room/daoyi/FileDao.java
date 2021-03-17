@@ -41,4 +41,7 @@ public interface FileDao {
     @Query("select * from FileBeans where isRecent= :Recent") // 查询收藏数据
     LiveData<List<FileBeans>> queryR(int Recent);
 
+    @Query("select * from FileBeans where isRecent= :Recent and path= :path") // 查询收藏数据
+    List<FileBeans> queryRP(int Recent,String path);
+
 }

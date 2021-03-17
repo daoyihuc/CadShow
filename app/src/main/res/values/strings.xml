@@ -11,6 +11,14 @@
         <item>全部文件</item>
     </string-array>
 
+    <string-array name="shoptabs">
+        <item>厨房组合</item>
+        <item>床具组合</item>
+        <item>儿童家具</item>
+        <item>屏风隔断</item>
+        <item>墙面墙饰</item>
+    </string-array>
+
     <string name="recent_empty">最近没有打开文件</string>
     <string name="web_empty_no">登录查看云盘</string>
     <string name="web_empty_yes">云盘还没上传文件哦</string>

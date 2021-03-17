@@ -8,16 +8,26 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.viewbinding.ViewBinding;
 
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihuan.daoyi.cad.R;
 import com.zhihuan.daoyi.cad.databinding.ActivityBaseBinding;
+import com.zhihuan.daoyi.cad.ui.room.AppDatabase;
+import com.zhihuan.daoyi.cad.ui.room.entity.BaseF;
+import com.zhihuan.daoyi.cad.ui.room.entity.FileBeans;
+import com.zhihuan.daoyi.cad.ui.room.types.DATABASES;
 import com.zhihuan.daoyi.cad.utils.MacUtils;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author: daoyi(yanwen)
@@ -28,6 +38,9 @@ import io.reactivex.functions.Consumer;
 public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     protected ActivityBaseBinding baseBinding;
     public T viewBinding;
+    public LiveData<List<FileBeans>> listLiveData;
+    protected AppDatabase db;
+    protected rx.Observable<Object> objectObservable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +67,7 @@ public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActiv
         baseBinding.title.setRightTitle("");
         baseBinding.title.setRightFontSize(18);
         baseBinding.title.setRightColor(0xff000000);
-        baseBinding.title.setLeftMargin(MacUtils.dpto(10),0,0,0);
+        baseBinding.title.setLeftMargin(MacUtils.dpto(20),0,0,0);
         baseBinding.title.setRightMargin(0,0,MacUtils.dpto(10),0);
         baseBinding.title.addviews();
         baseBinding.title.setVisibility(View.VISIBLE);
@@ -83,6 +96,62 @@ public abstract class BaseActivity<T extends ViewBinding> extends AppCompatActiv
                 }
             }
         });
+    }
+
+    public rx.Observable<Object> StartObservable(List<FileBeans> va, DATABASES type){
+        BaseF baseF = new BaseF();
+        rx.Observable<Object> objectObservable = rx.Observable.create(s -> {
+
+            for (int i = 0; i < va.size(); i++) {
+                switch (DATABASES.stateOf(type.getType())){
+                    case INSERT:
+                        db.fileDao().insert(va.get(i));
+                        baseF.setCode(200);
+                        s.onNext(baseF);
+                        break;
+                    case QUERY:
+                        listLiveData = db.fileDao().queryAll();
+                        s.onNext(baseF);
+                        break;
+                    case QUERYF:
+                        listLiveData = db.fileDao().queryF(va.get(i).isFavorites);
+                        s.onNext(baseF);
+                        break;
+                    case QUERYFN:
+                        int a =db.fileDao().queryFN(va.get(i).path);
+                        s.onNext(a);
+                        break;
+                    case QUERYR:
+                        listLiveData = db.fileDao().queryR(va.get(i).isRecent);
+                        s.onNext(baseF);
+                        break;
+                    case QUERYRP:
+                        List<FileBeans> list = db.fileDao().queryRP(1, va.get(i).getPath());
+                        s.onNext(list);
+                        break;
+                    case DELETE:
+                        db.fileDao().delete(va.get(i));
+                        s.onNext(baseF);
+                        break;
+                    case UPDATE:
+                        db.fileDao().update(va.get(i).isFavorites,va.get(i).path);
+                        baseF.setCode(200);
+                        s.onNext(baseF);
+                        break;
+                }
+
+            }
+
+            s.onCompleted();
+        });
+        return objectObservable;
+    }
+
+    public void toSubscribe(Subscriber subscriber, rx.Observable observable){
+        observable.subscribeOn(Schedulers.io())//指定订阅关系发生在IO线程
+                .unsubscribeOn(Schedulers.io())//指定解绑发生在IO线程
+                .observeOn(AndroidSchedulers.mainThread())//指回调发生在主线程
+                .subscribe(subscriber);//创建订阅关系
     }
 
 

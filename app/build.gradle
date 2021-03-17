@@ -66,11 +66,21 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.2.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 
+    //websocket
+//    implementation 'com.squareup.okio:okio:1.10.0'
+//    implementation 'com.squareup.okhttp3:okhttp:3.7.0'
+//    implementation 'com.squareup.okhttp3:logging-interceptor:3.7.0'
+
+    /*okhttp3的日志打印*/
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+
     /*retrofit2*/
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     /*gason解析器*/
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
+
+
 
     //腾讯的Bugly异常上传
     implementation 'com.tencent.bugly:crashreport:latest.release'
@@ -110,5 +120,5 @@ dependencies {
     // optional - Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
-
+    implementation project(':HTTP')
 }
