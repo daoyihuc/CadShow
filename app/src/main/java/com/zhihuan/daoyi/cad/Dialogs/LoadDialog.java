@@ -41,6 +41,7 @@ public class LoadDialog extends Dialog {
     public LoadDialog(@NonNull Context context, int themeResId) {
         super(context,themeResId);
         this.mContext=context;
+        //
     }
 
     @Override
