@@ -60,8 +60,7 @@ public class LoadDialog extends Dialog {
 
     public void setMessage(String val){
         this.msg=val;
-
-
+        /// hh
     }
 
 
