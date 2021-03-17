@@ -62,6 +62,8 @@ public class LoadDialog extends Dialog {
         this.msg=val;
     }
 
+
+
     @Override
     public void show() {
         super.show();
